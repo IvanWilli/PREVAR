@@ -53,12 +53,12 @@
 \usepackage{amsthm,amsmath}
 \RequirePackage{natbib}
 \usepackage{natbib}
-%\RequirePackage[authoryear]{natbib}% uncomment this for author-year bibliography
+\RequirePackage[authoryear]{natbib}% uncomment this for author-year bibliography
 %\RequirePackage{hyperref}
 \usepackage[utf8]{inputenc} %unicode support
 %\usepackage[applemac]{inputenc} %applemac support if unicode package fails
 %\usepackage[latin1]{inputenc} %UNIX support if unicode package fails
-
+%\usepackage{natbib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                             %%
@@ -74,12 +74,9 @@
 %%  submitted article.                         %%
 %%                                             %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{natbib}
 
-\def\includegraphic{}
-\def\includegraphics{}
-
-
+%\def\includegraphic{}
+%\def\includegraphics{}
 
 %%% Put your definitions there:
 \startlocaldefs
@@ -89,124 +86,9 @@
 %%% Begin ...
 \begin{document}
 
-%%% Start of article front matter
-\begin{frontmatter}
+\input{metadata}
+\input{abstract}
 
-\begin{fmbox}
-\dochead{Research}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% Enter the title of your article here     %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\title{Prevalence and the variance of state occupancy time}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% Enter the authors here                   %%
-%%                                          %%
-%% Specify information, if available,       %%
-%% in the form:                             %%
-%%   <key>={<id1>,<id2>}                    %%
-%%   <key>=                                 %%
-%% Comment or delete the keys which are     %%
-%% not used. Repeat \author command as much %%
-%% as required.                             %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\author[
-   addressref={aff1},                   % id's of addresses, e.g. {aff1,aff2}
-   corref={aff1},                       % id of corresponding address, if any
-   noteref={n1},                        % id's of article notes, if any
-   email={riffe@demogr.mpg.de}   % email address
-]{\inits{TR}\fnm{Tim} \snm{Riffe}}
-%\author[
-%   addressref={aff1,aff2},
-%   email={john.RS.Smith@cambridge.co.uk}
-%]{\inits{JRS}\fnm{John RS} \snm{Smith}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% Enter the authors' addresses here        %%
-%%                                          %%
-%% Repeat \address commands as much as      %%
-%% required.                                %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\address[id=aff1]{%                           % unique id
-  \orgname{Max-Planck-Institute for Demographic Research}, % university, etc
-  \street{Konrad-Zuse-Str. 1},                     %
-  \postcode{18057}                                % post or zip code
-  \city{Rostock},                              % city
-  \cny{Germany}                                    % country
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% Enter short notes here                   %%
-%%                                          %%
-%% Short notes will be after addresses      %%
-%% on first page.                           %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{artnotes}
-\note{This manuscript is in its early stages}     % note to the article
-\note[id=n1]{~} % note, connected to author
-\end{artnotes}
-
-\end{fmbox}% comment this for two column layout
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% The Abstract begins here                 %%
-%%                                          %%
-%% Please refer to the Instructions for     %%
-%% authors on http://www.biomedcentral.com  %%
-%% and include the section headings         %%
-%% accordingly for your article type.       %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{abstractbox}
-
-\begin{abstract} % abstract
-\parttitle{Background} 
-Markov reward methods have been proposed to calculate the variance of state occupancy time based on age-structured prevalence and survivorship.
-\parttitle{Objectives} I aim to clarify the assumptions of this approach, give bounds to its reasonableness, and suggest improvements.
-\parttitle{Methods} I calculate results for extreme cases to provide bounds, I simulate the variance under simple assumptions, and simulate a more natural inter-individual state distribution.
-\parttitle{Results} I show that state occupancy variance for Sullivan-style inputs is not identified, and I show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
-\parttitle{Conclusions} 
-The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on inter-individual disparities in state occupancies.
-\end{abstract}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                          %%
-%% The keywords begin here                  %%
-%%                                          %%
-%% Put each keyword in separate \kwd{}.     %%
-%%                                          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{keyword}
-\kwd{Healthy life expectancy}
-\kwd{Sullivan method}
-\kwd{Healthy life variance}
-\end{keyword}
-
-% MSC classifications codes, if any
-%\begin{keyword}[class=AMS]
-%\kwd[Primary ]{}
-%\kwd{}
-%\kwd[; secondary ]{}
-%\end{keyword}
-
-\end{abstractbox}
-%
 %\end{fmbox}% uncomment this for twcolumn layout
 
 \end{frontmatter}
@@ -231,14 +113,8 @@ The variance of state occupancy time is only identified if a) state life traject
 %%                                          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%% start of article main body
-% <put your article body there>
-
-%%%%%%%%%%%%%%%%
-%% Background %%
-%%
-%\section*{Content}
-%Text and results for this section, as per the individual journal's instructions for authors. %\cite{koon,oreg,khar,zvai,xjon,schn,pond,smith,marg,hunn,advi,koha,mouse}
+\section*{Introduction}
+Healthy inquality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inquality in health outcomes, either due to violations of the assumption of homogeneity of life contingencies 
 
 \section*{Sullivan in continuous time}
 Let's begin with some familiar notation, $\ell(x)$ denotes lifetable survivorship, with an arbitrary radix, or starting population. If $\ell(0) = 1$ then $\ell(x)$ can be interpreted as a probability of surviving from birth until age $x$. $\pi(x)$ is the prevalence of a given condition (healthiness or unhealthiness, disability) at age $x$, and it falls in the range $[0,1]$, giving it a probability interpretation. The commonly used Sullivan method \citep{sullivan1971single} of calculating healthy life expectancy, $e^H(x)$ is to integrate the product of these two functions.
@@ -255,9 +131,16 @@ If we would like to know something about the variance of state occupancy in a Su
 
 Expressing the lifetable as a Markov chain with \emph{rewards} defined as prevalence gives a unique definition for the variance of state occupancy for each of the above assumptions, but it is unclear to me how well-supported these are. Many other reward types are discussed by Caswell \& Zarulli \cite{caswell2018matrix}, and I do not discuss these, nor do I treat the case of multistate populations. Even so, the conclusions reached here will generalize to the case of multistate populations.
 
+We will use two shorthand and equivalent forms to calculate variance, depending on the situation. First the mean of the squared residuals:
+\begin{equation}
+Var(X) = \mathbb{E}\left[(X-\mathbb{E}[X])^2 \right] \quad \mathrm{,}
+\end{equation}
+where in practice the outer expectation is taken as the sum of the squared residuals elementwise-weighted by their respective probabilities.
+
 \subsection*{Bernoulli rewards}
 
 
+\subsection*{Fixed rewards}
 %\nocite{oreg,schn,pond,smith,marg,hunn,advi,koha,mouse}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

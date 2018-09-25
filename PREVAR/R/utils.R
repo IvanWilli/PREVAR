@@ -15,6 +15,11 @@ lx2qx <- function(lx){
 	1-px
 }
 
+lx2dx <- function(lx,radix=1e5){
+	lx <- lx / lx[1]
+	-diff(radix * c(lx,0))
+}
+
 granularize <- function(y_single, 
 		int_x = 1:length(y_single) - 1, 
 		interval = .5, 
@@ -37,4 +42,25 @@ granularize <- function(y_single,
 
 prev_line <- function(vec, from = 0, to = .5){
 	seq(from,to,length=length(vec))
+}
+
+'%==%' <- function(x,y){
+	if (is.null(x)){
+		return(rep(FALSE, length(y)))
+	}
+	if (is.null(y)){
+		return(rep(FALSE,length(x)))
+	}
+	x == y & !is.na(x) & !is.na(y)
+}
+
+
+'%!=%' <- function(x,y){
+	if (is.null(x)){
+		return(rep(TRUE, length(y)))
+	}
+	if (is.null(y)){
+		return(rep(TRUE,length(x)))
+	}
+	x != y & !is.na(x) & !is.na(y) 
 }
