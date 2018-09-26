@@ -99,8 +99,80 @@ sum(as.numeric(names(DiDist)) * DiDist) - DLE
 
 
 # same expectancy, different VAR
-Res <- PrevRewards(qx_10, prev_10, closeout = T, type=2, interval = 10, rewards = "fixed")
+VarBernoulli(qx_10, prev_10,  interval = 10, calcs="faster")
+VarBernoulli(qx_10, prev_10,  interval = 10, calcs="orig")
 Res$ex[1] - DLE
 Res$var[1];VDLE
 # different interpretation?
+
+asymptoteBernoulli <- function(dx,prev,interval=1,closeout=TRUE){
+	dx        <- dx / sum(dx)
+	n         <- length(dx)
+	Ntraj     <- sum(2^(1:n))
+	stopifnot(length(prev) == n)
+	
+	trajs     <- get_traj(c(0, 1), n, closeout = closeout)
+	
+	stopifnot(length(trajs) == Ntraj)
+#saveRDS(trajs,file="Data/traj10_110.RDS")
+	
+	#length(trajs) == Ntraj
+	
+#trajs <- readRDS("Data/traj5_100.RDS")
+	
+# put it in a matrix
+	Tmat  <- matrix(NA,nrow = Ntraj, ncol = n)
+	for (i in 1:Ntraj){
+		traji                    <- trajs[[i]]
+		Tmat[i, 1:length(traji)] <- traji
+	}
+	
+	P1                <- matrix(prev, nrow = Ntraj, ncol = n, byrow = TRUE)
+	Pmat              <- 1 - P1
+	ind1              <- !is.na(Tmat) & Tmat > 0
+	Pmat[ind1]        <- P1[ind1]
+	Pmat[is.na(Tmat)] <- 1 # use 1 for rowProd
+	
+
+	prevprod <- apply(Pmat,1,prod)
+#hist(log(prevprod))
+# probability of length of life x
+	dx_weight <- rep(dx,times=c(2^(1:n)))
+	
+# probability of life trajectory
+	trajprob <- prevprod * dx_weight
+	
+    # test
+	#sum(trajprob)
+	
+# total life in disability
+	Di     <- rowSums(Tmat, na.rm = TRUE) * interval
+	
+# probability of each Di:
+	DiDist <- tapply(trajprob, Di, sum)
+	
+# expectancy:
+	DLE    <- sum(Di * trajprob)
+# check ()
+	#sum(as.numeric(names(DiDist)) * DiDist) - DLE
+	
+# asymptotic variance: E[(X - E[X])^2]
+	sum((as.numeric(names(DiDist)) - DLE) ^ 2 * DiDist)
+	
+	# identical to:
+# sum((Di-DLE)^2*trajprob)
+}
+DLE <- .71
+VDLE <- asymptoteBernoulli(dx=c(.2,.5,.3), prev=c(.1,.5,.7),interval = 1, closeout=FALSE)
+asymptoteBernoulli(dx=c(.2,.5,.3), prev=c(.1,.5,.7),interval = 1, closeout=TRUE)
+
+qx <- lx2qx(c(1,.8,.3))
+
+VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=FALSE, calcs="faster")
+VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=FALSE, calcs="orig")
+
+VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=TRUE, calcs="faster")
+VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=TRUE, calcs="orig")
+
+
 

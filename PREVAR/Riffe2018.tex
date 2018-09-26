@@ -120,6 +120,7 @@ Healthy inquality is usually measured between populations by comparing life expe
 Let's begin with some familiar notation, $\ell(x)$ denotes lifetable survivorship, with an arbitrary radix, or starting population. If $\ell(0) = 1$ then $\ell(x)$ can be interpreted as a probability of surviving from birth until age $x$. $\pi(x)$ is the prevalence of a given condition (healthiness or unhealthiness, disability) at age $x$, and it falls in the range $[0,1]$, giving it a probability interpretation. The commonly used Sullivan method \citep{sullivan1971single} of calculating healthy life expectancy, $e^H(x)$ is to integrate the product of these two functions.
 %
 \begin{equation}
+\label{eq:sull}
 e^H(x) = \frac{1}{\ell(x)} \int_x^\omega \ell(t)\pi(t) \mathrm{d}t
 \end{equation}
 %
@@ -131,13 +132,21 @@ If we would like to know something about the variance of state occupancy in a Su
 
 Expressing the lifetable as a Markov chain with \emph{rewards} defined as prevalence gives a unique definition for the variance of state occupancy for each of the above assumptions, but it is unclear to me how well-supported these are. Many other reward types are discussed by Caswell \& Zarulli \cite{caswell2018matrix}, and I do not discuss these, nor do I treat the case of multistate populations. Even so, the conclusions reached here will generalize to the case of multistate populations.
 
-We will use two shorthand and equivalent forms to calculate variance, depending on the situation. First the mean of the squared residuals:
-\begin{equation}
-Var(X) = \mathbb{E}\left[(X-\mathbb{E}[X])^2 \right] \quad \mathrm{,}
-\end{equation}
-where in practice the outer expectation is taken as the sum of the squared residuals elementwise-weighted by their respective probabilities.
+%We will use two shorthand and equivalent forms to calculate variance, depending on the situation. First the mean of the squared residuals:
+%\begin{equation}
+%Var(X) = \mathbb{E}\left[(X-\mathbb{E}[X])^2 \right] \quad \mathrm{,}
+%\end{equation}
+%where in practice the outer expectation is taken as the sum of the squared residuals duly weighted by their respective probabilities of ocurring. The second is
 
 \subsection*{Bernoulli rewards}
+I'll first give my own lifetable deconstruction of the matrix algebra approach given to Bernoulli state variance in \cite{caswell2018matrix}. Then $e^H(x)$ is defined per \eqref{eq:sull}, and it is the first moment of state occupancy, which we can denote $\eta^{(1)}$, where the superscript in parentheses denotes the moment number and is not a power. We continue to calculate the second moment of state occupancy, $\eta^{(2)}$ as:
+\begin{equation}
+\eta^{(2)}_t = \frac{1}{\ell_x} \sum_x^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi(t)\eta^{(1)}_t\right] \quad \mathrm{,}
+\end{equation}
+where $q_x$ is the probability of death in the interval. Here notation omits intervals, but we assume to be working in discrete bins, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin, ergo that all other unomodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
+\begin{equation}
+Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
+\end{equation}
 
 
 \subsection*{Fixed rewards}
