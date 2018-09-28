@@ -53,6 +53,8 @@
 \usepackage{amsthm,amsmath}
 \RequirePackage{natbib}
 \usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \RequirePackage[authoryear]{natbib}% uncomment this for author-year bibliography
 %\RequirePackage{hyperref}
 \usepackage[utf8]{inputenc} %unicode support
@@ -141,15 +143,53 @@ Expressing the lifetable as a Markov chain with \emph{rewards} defined as preval
 \subsection*{Bernoulli rewards}
 I'll first give my own lifetable deconstruction of the matrix algebra approach given to Bernoulli state variance in \cite{caswell2018matrix}. Then $e^H(x)$ is defined per \eqref{eq:sull}, and it is the first moment of state occupancy, which we can denote $\eta^{(1)}$, where the superscript in parentheses denotes the moment number and is not a power. We continue to calculate the second moment of state occupancy, $\eta^{(2)}$ as:
 \begin{equation}
-\eta^{(2)}_t = \frac{1}{\ell_x} \sum_x^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi(t)\eta^{(1)}_t\right] \quad \mathrm{,}
+\label{eq:bern2}
+\eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
-where $q_x$ is the probability of death in the interval. Here notation omits intervals, but we assume to be working in discrete bins, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin, ergo that all other unomodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
+where $q_x$ is the probability of death in the interval and $\omega$ is the highest age of death. Here notation omits intervals, but we assume to be working in discrete bins, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin, ergo that all other unomodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
 \begin{equation}
+\label{eq:var2}
 Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
 \end{equation}
 
+I highlight two assumptions behind this expression: 1) mortality is independent of whether one is in the prevalent state, and 2) the same Bernoulli prevalence extends to any further stratification of the members in a given age class, $x$.
 
 \subsection*{Fixed rewards}
+If instead of assuming that prevalence is partioned in a binary fashion, and each individual experiences $\pi_x$ fraction of the year in the state, then equation \eqref{eq:bern2} becomes
+\begin{equation}
+\eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t^2 + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
+\end{equation}
+and \eqref{eq:var2} is the same.
+
+\subsection{Illustrations of Bernoulli and fixed prevalence}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{Figures/BernTraj.pdf}
+        \caption{The binary 2-state trajectory space.}
+        \label{fig:b1}
+    \end{subfigure}
+    ~ 
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{Figures/BernTrajProbs.pdf}
+        \caption{With Bernoulli prevalence cell probabilities.}
+        \label{fig:b2}
+    \end{subfigure}
+    
+     \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{Figures/BernCondTrajProbs.pdf}
+        \caption{With trajectories Bernoulli weighted, conditional on length of life.}
+        \label{fig:b3}
+    \end{subfigure}
+    ~ 
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{Figures/BernTrajProbsWeighted}
+        \caption{With trajectories Bernoulli and lifetable weighted.}
+        \label{fig:b4}
+    \end{subfigure}
+    \caption{A depiction of the Bernoulli life trajectories implied by the prevalence and lifetable of Tab.~\ref{}}\label{fig:bernexplain}
+\end{figure}
+
 %\nocite{oreg,schn,pond,smith,marg,hunn,advi,koha,mouse}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -45,7 +45,6 @@ prev.01   <- prev_line(lx.01,0,.5)
 
 
 
-
 plot_traj <- function(traj,y,interval = 5,...){
 	trle <- rle(traj)
 	drop <- trle$values == 0

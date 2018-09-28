@@ -412,3 +412,85 @@ VarBernoulli <- function(qx,prev,interval, calcs = "orig",closeout=FALSE){
 #	
 #
 #colSums(N * rightside)
+
+VarFixed <- function(qx,prev,interval,calcs = "orig",closeout=FALSE){
+	# just a question of where to put it if the time interval is e.g. .5
+	s       <- length(qx) # nr of ages
+	s1      <- s + 1
+	stopifnot(s == length(prev))
+	I       <- diag(s) # identity matrix
+	px      <- 1 - qx
+	U       <- matrix(0, nrow = s, ncol = s)
+	U[row(U)-1 == col(U) ] <- px[-s]
+	U[s,s]  <- px[s]
+	# define the Markov chain
+	P       <- rbind(cbind(U, rep(0, s)), c(1 - colSums(U), 1))
+	m1      <- prev * interval
+	m2      <- prev ^ 2 * interval
+	# Define reward matrices with rewards associated with the transitions
+	# from class
+	#R       <- matrix(0, nrow = s1, ncol = s1)
+	#R[row(R) - 1 == col(R)]      <- m
+	
+	# from paper
+	R1 <- matrix(m1, nrow = s1, ncol = s, byrow = TRUE)
+	R1 <- cbind(R1, 0)
+	R2 <- matrix(m2, nrow = s1, ncol = s, byrow = TRUE)
+	R2 <- cbind(R2, 0)
+	
+#	R1 <- matrix(0, nrow = s1, ncol = s1)
+#	R2 <- R3 <- R1
+#	# to place entries on the subdiagonal match row to column and then subtract 1 from row
+#	R1[row(R1) - 1 == col(R1)]      <- m1
+#	R1[s1, s1]                      <- 0
+#	# TR: modify to give 1/2 reward
+#	R2[row(R2) - 1 == col(R2)]      <- m2
+#	R2[s1, s1]                      <- 0
+	if (closeout){
+		R[s1, ] <- R[s1, ] / 2
+	}
+	
+	if (calcs == "faster"){
+		N <- matrix(0,s,s)
+		for (i in 1:s){
+			N[i:s,i] <- qx2lx(qx[i:s],radix=1)
+		}
+		
+		rho1 <- colSums( N * colSums(P * R1)[-s1])
+		rho2 <- colSums(N *
+						(
+							colSums(P * R2)[-s1] +
+							colSums(2 *(P*R1)[-s1,-s1] * c(rho1))
+							))
+	}
+# original Caswell code:
+	if (calcs == "orig"){
+		
+		Z    <- cbind(diag(rep(1,s)), rep(0, s)) # truncation matrix
+		e    <- rep(1, s1) #vector of ones (112x1)
+		NN   <- solve(I - t(U))
+		
+		# from paper
+#		Rtilde <- Z %*% R %*% t(Z)
+#		rho1 <- NN %*% Z%*%t(P*R)%*% e
+#		rho2 <- NN %*% (
+#					Z %*% t(P*R) %*% e +
+#					2 * t(U*Rtilde)%*%rho1
+#					)
+		# from class
+		rho1 <- NN%*%(Z%*%((t(P*R1))%*%e))
+		rho2 <- NN%*%(Z%*%((t(P*R2))%*%e)+2*Z%*%(t(P*R1))%*%t(Z)%*%rho1)
+		
+	}
+	
+	
+	.var        <- rho2 - rho1^2
+	.var[1] 
+}
+
+rho1 <- colSums( N * colSums(P * R1)[-s1])
+rho2 <- colSums(N *
+				(
+					colSums(P * R2)[-s1] +
+					colSums(2 *(P*R1)[-s1,-s1] * c(rho1))
+					))
