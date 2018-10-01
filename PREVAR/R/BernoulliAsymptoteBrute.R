@@ -101,8 +101,8 @@ sum(as.numeric(names(DiDist)) * DiDist) - DLE
 # same expectancy, different VAR
 VarBernoulli(qx_10, prev_10,  interval = 10, calcs="faster")
 VarBernoulli(qx_10, prev_10,  interval = 10, calcs="orig")
-Res$ex[1] - DLE
-Res$var[1];VDLE
+#Res$ex[1] - DLE
+#Res$var[1];VDLE
 # different interpretation?
 
 get_Tmat <- function(x = c(0,1), n, closeout = FALSE){
@@ -182,8 +182,10 @@ asymptoteBernoulli <- function(dx,prev,interval=1,closeout=TRUE){
 #VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=TRUE, calcs="faster")
 #VarBernoulli(qx,prev=c(.1,.5,.7),interval = 1, closeout=TRUE, calcs="orig")
 #
+DLE <- .71
+prev=c(.1,.5,.7)
 VarFixed(qx=lx2qx(c(1,.8,.3)),prev=c(.1,.5,.7),interval = 1, closeout=FALSE, calcs="faster")
-sum((cumsum(prev) - DLE)^2 * dx)
+sum((cumsum(c(.1,.5,.7)) - DLE)^2 * lx2dx(c(1,.8,.3),1))
 
 get_Tmat(n=3,closeout=FALSE)
 
@@ -334,8 +336,8 @@ par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim =
 				c(0,3), ylim = c(0,3), ann = FALSE, axes = FALSE)
 plotBernoulliSeq(Pmat,Tmat)
-axis(1,at=c(0,1,2,3))
-axis(2,at=c(0,1,2,3),las=1)
+axis(1,at=c(0,1,2,3),cex.axis=1.5)
+axis(2,at=c(0,1,2,3),las=1,cex.axis=1.5)
 dev.off()
 # 4) Bernoulli also Markov weighted
 pdf("Figures/BernTrajProbsWeighted.pdf",height=5.7,width=5.7)
@@ -343,7 +345,20 @@ par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim =
 				c(0,3), ylim = c(0,1), ann = FALSE, axes = FALSE)
 plotBernoulliMarkovSeq(Pmat,Tmat,dx=c(.2,.5,.3))
-axis(1,at=c(0,1,2,3))
-axis(2,at=c(0,1),las=1)
+axis(1,at=c(0,1,2,3),cex.axis=1.5)
+axis(2,at=c(0,1),las=1,cex.axis=1.5)
 dev.off()
 
+
+prevprod <- apply(Pmat,1,prod,na.rm=TRUE)
+#hist(log(prevprod))
+# probability of length of life x
+dx_weight <- rep(c(.2,.5,.3), times=c(2^(1:3)))
+ptraj     <- prevprod * dx_weight
+Di        <- rowSums(Tmat, na.rm = TRUE)
+
+# probability distribution of total time spent
+pdf("Figures/BernDiDist.pdf", height = 5.7, width = 5.7)
+par(mai=c(.5,.7,.2,0))
+barplot(tapply(ptraj, Di, sum),space=0,las=1,cex.axis=1.5,cex=1.5)
+dev.off()

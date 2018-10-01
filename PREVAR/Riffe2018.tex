@@ -116,7 +116,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Introduction}
-Healthy inquality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inquality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk.
+Healthy inquality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inquality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk. If there
 
 bla bla I'll end up proposing some alternative variance calcs for Sullivan situations, but also that these are always hypothetical and that in fact the variance is not determined, and has a rather wide potential range of values depending on actual life trajectories.
 
@@ -148,7 +148,7 @@ I'll first give my own lifetable deconstruction of the matrix algebra approach g
 \label{eq:bern2}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
-where $q_x$ is the probability of death in the interval and $\omega$ is the highest age of death. Here notation omits intervals, but we assume to be working in discrete bins, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin, ergo that all other unomodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
+where $q_x$ is the probability of death in the interval and $\omega$ is the highest age of death. Here notation omits intervals, but we assume to be working in discrete bins of uniform width, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin within each age, ergo that all other unmodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
 \begin{equation}
 \label{eq:var2}
 Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
@@ -161,32 +161,38 @@ If instead of assuming that prevalence is partioned in a binary fashion, and eac
 \begin{equation}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t^2 + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
-and \eqref{eq:var2} is the same.
-
+and \eqref{eq:var2} is the same. State occupancy variance under the assumption of fixed rewards also has a more intuitive lifetable expression:
+\begin{equation}
+Var_x = \frac{1}{l_x}\sum_x^\omega (\mathcal{P}_t - \eta^{(1)}_x)^2 d_t \quad\mathrm{,}
+\end{equation}
+where $\mathcal{P}_t$ is the cumulative prevalence from age $x$ to age $t$, and $d_t$ is the probability of survival from age $x$ to age $t$, defined as $(q_t l_t)/l_x$. 
 \subsection{Illustrations of Bernoulli and fixed prevalence}
+Equations \eqref{}
+
+
 \begin{figure}
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Figures/BernTraj.pdf}
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[scale=.5]{Figures/BernTraj.pdf}
         \caption{The binary 2-state trajectory space.}
         \label{fig:b1}
     \end{subfigure}
     ~ 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Figures/BernTrajProbs.pdf}
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[scale=.5]{Figures/BernTrajProbs.pdf}
         \caption{With Bernoulli prevalence cell probabilities.}
         \label{fig:b2}
     \end{subfigure}
     
-     \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Figures/BernCondTrajProbs.pdf}
+     \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[scale=.4]{Figures/BernCondTrajProbs.pdf}
         \caption{With trajectories Bernoulli weighted, conditional on length of life.}
         \label{fig:b3}
     \end{subfigure}
     ~ 
-    \begin{subfigure}[b]{0.3\textwidth}
-        \includegraphics[width=\textwidth]{Figures/BernTrajProbsWeighted}
-        \caption{With trajectories Bernoulli and lifetable weighted.}
+    \begin{subfigure}[b]{0.4\textwidth}
+        \includegraphics[scale=.4]{Figures/BernTrajProbsWeighted}
+        \caption{With trajectories Bernoulli and lifetable weighted.\\}
         \label{fig:b4}
     \end{subfigure}
     \caption{A depiction of the Bernoulli life trajectories implied by the prevalence and lifetable of Tab.~\ref{}}\label{fig:bernexplain}
