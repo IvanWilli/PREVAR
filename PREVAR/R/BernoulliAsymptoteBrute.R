@@ -412,3 +412,34 @@ wvar <- function(x,w){
 	sum((x - mn)^2 * w)/sum(w)
 }
 wvar(0:3,pt)
+
+
+# ---------------------------
+P <- cumsum(prev)
+dx <- c(.2,.5,.3)
+wmean(P,dx)
+wvar(P,dx)
+lx <- c(1,.8,.3)
+
+pdf("Figures/fixedflat.pdf", width=4,height=4)
+par(mai=c(.5,.5,.1,.1))
+plot(NULL, type="n",xlim=c(0,3),ann=FALSE,axes=FALSE,ylim=c(0,1))
+rect(0:2,0,1:3,lx,col=gray(1-prev))
+axis(1,at=c(0,1,2,3),cex.axis=1.5)
+axis(2,at=c(0,1),las=1,cex.axis=1.5)
+dev.off()
+
+pdf("Figures/fixedbars.pdf", width=4,height=4)
+par(mai=c(.5,.5,.1,.1))
+plot(NULL, type="n",xlim=c(0,3),ann=FALSE,axes=FALSE,ylim=c(0,1))
+rect(0:2,0,1:3,lx)
+rect(1:3-prev,0,1:3,lx,col="black")
+axis(1,at=c(0,1,2,3),cex.axis=1.5)
+axis(2,at=c(0,1),las=1,cex.axis=1.5)
+dev.off()
+
+
+
+
+
+
