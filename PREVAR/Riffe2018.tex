@@ -116,7 +116,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Introduction}
-Healthy inquality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inquality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk. If there
+Healthy inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk. If there
 
 bla bla I'll end up proposing some alternative variance calcs for Sullivan situations, but also that these are always hypothetical and that in fact the variance is not determined, and has a rather wide potential range of values depending on actual life trajectories.
 
@@ -148,7 +148,7 @@ I'll first give my own lifetable deconstruction of the matrix algebra approach g
 \label{eq:bern2}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
-where $q_x$ is the probability of death in the interval and $\omega$ is the highest age of death. Here notation omits intervals, but we assume to be working in discrete bins of uniform width, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin within each age, ergo that all other unmodelled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
+where $q_x$ is the probability of death in the interval and $\omega$ is the highest age of death. Here notation omits intervals, but we assume to be working in discrete bins of uniform width, where death and transition changes only happen in the moment of interval steps, implying a stepped survival curve and discrete life trajectories. We also assume that the same prevalence applies to each length-of-life bin within each age, ergo that all other unmodeled population strata have the same prevalence. Then the variance is determined, and it can be calculated as:
 \begin{equation}
 \label{eq:var2}
 Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
@@ -157,19 +157,34 @@ Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
 I highlight two assumptions behind this expression: 1) mortality is independent of whether one is in the prevalent state, and 2) the same Bernoulli prevalence extends to any further stratification of the members in a given age class, $x$.
 
 \subsection*{Fixed rewards}
-If instead of assuming that prevalence is partioned in a binary fashion, and each individual experiences $\pi_x$ fraction of the year in the state, then equation \eqref{eq:bern2} becomes
+If instead of assuming that prevalence is partitioned in a binary fashion, and each individual experiences $\pi_x$ fraction of the year in the state, then equation \eqref{eq:bern2} becomes
 \begin{equation}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t^2 + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
 and \eqref{eq:var2} is the same. State occupancy variance under the assumption of fixed rewards also has a more intuitive lifetable expression:
 \begin{equation}
+\label{eq:varbernlt}
 Var_x = \frac{1}{l_x}\sum_x^\omega (\mathcal{P}_t - \eta^{(1)}_x)^2 d_t \quad\mathrm{,}
 \end{equation}
 where $\mathcal{P}_t$ is the cumulative prevalence from age $x$ to age $t$, and $d_t$ is the probability of survival from age $x$ to age $t$, defined as $(q_t l_t)/l_x$. 
-\subsection{Illustrations of Bernoulli and fixed prevalence}
-Equations \eqref{}
+\section{Illustrations of Bernoulli and fixed prevalence}
+To add intuition to the previous equations I give a worked example of manageable size. Define a population with three discrete age groups of uniform width 1, and assume that state transitions occur only on birthdays (this is relaxable). The prevalent state, say sickness, is coded with 1, whereas its complement is coded with 0. Then all 14 possible life trajectories are given in Fig.~\ref{fig:b1}. Some prevalence $\pi_x$, its complement, and some lifetable functions are given in Tab~\ref{tab:toy}.
 
+\begin{table}[ht!]
+\begin{tabular}{r|ccccl}
+age & $\pi_x$ & $1-\pi_x$ & $l_x$ & $d_x$ & $q_x$\\
+\hline
+0 & 0.1 & 0.9 & 1.0 & 0.2 & 0.2   \\
+1 & 0.5 & 0.5 & 0.8 & 0.5 & 0.625 \\
+2 & 0.7 & 0.3 & 0.3 & 0.3 & 1.0  
+\end{tabular}
+\caption{Parameters for toy examples}
+\label{tab:toy}
+\end{table}
 
+\subsection{Bernoulli illustration}
+Fig.~\ref{fig:b1} imputes values of $\pi_x$ and $1-\pi_x$ from Tab~\ref{tab:toy} into their respective positions for all 14 possible discrete life trajectories. The product of the proportions in each life sequence
+gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps, each of height 1. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ in Tab.~\ref{tab:toy}. For example, the probability of the 14th trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.4\textwidth}
@@ -195,8 +210,21 @@ Equations \eqref{}
         \caption{With trajectories Bernoulli and lifetable weighted.\\}
         \label{fig:b4}
     \end{subfigure}
-    \caption{A depiction of the Bernoulli life trajectories implied by the prevalence and lifetable of Tab.~\ref{}}\label{fig:bernexplain}
+    \caption{A depiction of the Bernoulli life trajectories implied by the prevalence and lifetable of Tab.~\ref{tab:toy}. \ref{fig:b1} shows all binary discrete life sequences that are possible under these conditions. \ref{fig:b2} shows the conditional cell probabilities as drawn from $\pi_x$ and $1-\pi_x$ in Tab.~\ref{tab:toy}. \ref{fig:b3} shows the same sequences where height is defined as the probability of observing the sequence conditional on eventual length of life. \ref{fig:b4} shows the same sequences duly weighted by the length of life distribution $d_x$. This is the stationary sequence distribution implied by the discrete Bernoulli process of Tab.~\ref{tab:toy}. }\label{fig:bernexplain}
 \end{figure}
+
+The stationary sequence distribution depicted in Fig.~\ref{fig:b4} underlies the occupancy time distribution implied by our Bernoulli prevalence example. The heights of each sequence in this graph give the weights to assign to each trajectory, the item we wish to weight is the total number of black boxes per trajectory in Fig~\ref{fig:b1}, which gives the total time spent in the state of interest. For example, three of the trajectories (1,3,7) do not include time spent in the state, and only one of the sequences (14) consists in three years spent in the state. Fig.~\ref{fig:DiDist} shows the stationary distribution of state occupancy, with contributions from each trajectory stacked and indicated with labelled tick marks. This distribution gives an alternate path to the expectation of state occupancy of \eqref{eq:sull} and the variance of \eqref{eq:var2}. 
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=.6]{Figures/DiDist_Ink.pdf}
+\caption{The distribution of occupancy time defined by a Bernoulli interpretation of the prevalence and lifetable given in Tab.~\ref{tab:toy}. The height of each segment gives the proportion of lives the experience the total time given on the $x$ axis. Sub-segments indicated with labelled tick marks indicate the contributions from each sequence in Fig.~\ref{fig:bernexplain}.}\label{fig:DiDist}
+\end{figure}
+
+In our case the expectation at birth of time spent in the state is 0.71 years under Bernoulli prevalence assumptions, and the variance is 0.5379. These are identical results to those of \cite{caswell2018matrix} if one assumes that a full reward is assigned on entrance into an age/state.
+
+\subsection{Fixed reward illustration}
+Recycling values from Tab~\ref{tab:toy}
+
 
 %\nocite{oreg,schn,pond,smith,marg,hunn,advi,koha,mouse}
 
@@ -212,7 +240,7 @@ Equations \eqref{}
   The authors declare that they have no competing interests.
 
 \section*{Author's contributions}
-    TR did everything.
+    TR did everything so far.
 
 \section*{Acknowledgements}
   Thanks to Douglas Wolf and Jennifer Karas Montez for posing a question that led to this work, and to Hal Caswell and Virginia Zarulli for the groundwork on which this is based and for fielding inquiries.

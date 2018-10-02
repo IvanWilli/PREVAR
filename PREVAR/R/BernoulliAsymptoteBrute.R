@@ -362,3 +362,53 @@ pdf("Figures/BernDiDist.pdf", height = 5.7, width = 5.7)
 par(mai=c(.5,.7,.2,0))
 barplot(tapply(ptraj, Di, sum),space=0,las=1,cex.axis=1.5,cex=1.5)
 dev.off()
+
+# and with stacked bars by trajectory
+DiT <- table(Di)
+
+stacked <- matrix(NA,nrow=6,ncol=4,dimnames=list(NULL,0:3))
+for (i in 1:4){
+	stacked[1:DiT[i],i] <- ptraj[Di == (i-1)]
+}
+
+par(mai=c(.5,.7,.2,0))
+barplot(stacked,space=0,las=1,cex.axis=1.5,cex=1.5,col = gray(.8))
+abline(v=.71,col="red")
+for (i in 1:4){
+	x   <- i- .5
+	ind <- which(Di == (i-1))
+	y   <- cumsum(ptraj[ind]) - (ptraj[ind]/2)
+	text(x,y,ind,col="white")
+}
+
+which(Di == 0)
+
+ts <- .05
+
+pdf("Figures/DiDist.pdf")
+par(mai=c(.5,.7,.2,0))
+plot(NULL, xlim=c(0,4),ylim=c(0,.5),ann=FALSE,axes=FALSE)
+for (i in 1:4){
+	x   <- i- 1
+	ind <- which(Di == (i-1))
+	y   <- cumsum(ptraj[ind]) 
+	segments(x,0,x,max(y))
+	segments(x-ts,y,x+ts,y)
+	text(x+ts,y,ind,pos=4)
+	points(x,max(y),pch=16,cex=1.5)
+}
+axis(1,at=0:3,pos=0)
+axis(2,las=1)
+dev.off()
+
+
+pt <- tapply(ptraj, Di, sum)
+wmean <- function(x,w){
+	sum(x*w)/sum(w)
+}
+wmean(0:3,pt)
+wvar <- function(x,w){
+	mn <- wmean(x,w)
+	sum((x - mn)^2 * w)/sum(w)
+}
+wvar(0:3,pt)
