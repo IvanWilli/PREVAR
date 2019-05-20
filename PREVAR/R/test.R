@@ -251,6 +251,7 @@ prev_x_from_lambda_alpha <- function(){
 	
 }
 
+#
 prevar_from_lambda_alpha <- function(){
 	# should do similar to above but just spit out the 
 	# variance statistic.
