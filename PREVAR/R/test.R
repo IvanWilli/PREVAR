@@ -190,3 +190,4 @@ points(error.measures$Ages, error.measures$Prev_estim_mean, ylab='Prev', xlab='A
 legend('topleft', bty='n', legend = c('Obs', 'Est (mean)'), col=1:2, lty=1)
 plot(error.measures$Prev_obs, error.measures$Prev_estim, ylab='Estimated', xlab='Observated')
 abline(a=0,b=1)
+
