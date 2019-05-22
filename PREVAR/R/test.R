@@ -248,7 +248,14 @@ abline(a=0,b=1)
 # return prevalence curve up until y. Make sense? Marginal calcs will be easier
 # if all lifespan prev vectors are the same length.
 
-prev_lambda_alpha_y <- function(x = 0:omega, y = max(x), lambda = 1, alpha = 1, S = 5, pad = TRUE, omega = 110){
+prev_lambda_alpha_y <- function(
+		x = seq(0,omega,by=delta), 
+		y = max(x), 
+		lambda = 1, 
+		alpha = 1, 
+		S = 5, 
+		omega = 110,
+		delta = .05){
 
   # start with....
   # 0      y-S      y    t*
@@ -265,56 +272,91 @@ prev_lambda_alpha_y <- function(x = 0:omega, y = max(x), lambda = 1, alpha = 1, 
   # text(1,0, integrate(f = prev_sv, lower =  0, upper = S, y = S, lambda = lambda)$value)
 
   # Define area implied by alpha
-  Area = ifelse(alpha==1, S / 2,
-                ifelse(alpha>1, S - S/alpha/2,
-                       alpha*S/2))
-  Area = max(min(Area, S), 0) # set limits
-  # text(2, 0, Area)
+#  Area = ifelse(alpha==1, S / 2,
+#                ifelse(alpha>1, S - S/alpha/2,
+#                       alpha*S/2))
+#  Area = max(min(Area, S), 0) # set limits
+#  # text(2, 0, Area)
   
   # get new limit t*
-  get_t_star = function(t_star){ 
+  get_shift = function(t_star, alpha, lambda, S){ 
     
     # https://www.wolframalpha.com/input/?i=%5Cint_0%5Et%7Bx%2Ft*%5Cexp((x-t)*%5Clambda)%7D
     # Area_hat = (lambda * t_star + exp(lambda * -t_star) - 1) / (lambda^2) / t_star
     
-    Area_hat = integrate(f = prev_sv, lower =  0, upper = t_star, y = t_star, lambda = lambda)$value
-    
-    (Area_hat - Area)^2
+		if (sign(t_star) == 1){
+			Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
+			
+		} else {
+			if (sign(t_star) == -1){
+				Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
+			} 
+		}
+		
+		
+	((alpha * (S/2)) - (Area_lambda_S)) ^ 2
   }
+ 
+   t_star = optimize(get_shift, interval = c(-S, S), alpha = alpha, lambda = lambda, S = S, tol = 1e-12)$minimum
   
-  t_star = optimize(get_t_star, interval = c(0, y))$minimum
-  
+   t_star <- round(t_star * 1/delta) * delta
+   #  
   # plot(seq(0,S,.05), prev_sv(seq(0,S,.05), S, lambda), t='l')
   # lines(seq(0,t_star,.05), prev_sv(seq(0,t_star,.05), t_star, lambda), col=2)
   
   # Define shrink -> new onset age
-  x_star = y - t_star    
-  
+#  x_star = y - t_star    
+#  
   # give prevalence interval
-  prev =  c(rep(0,sum(x<x_star)), 
-            prev_sv((x-x_star)[x>=x_star], t_star, lambda))
-  # plot(x, prev, t='l')
-  
-  return(list(x_star = x_star, prev = prev))
+#  prev =  c(rep(0,sum(x<x_star)), 
+#            prev_sv((x-x_star)[x>=x_star], t_star, lambda))
+
+  prev   <- x * 0
+  if (sign(t_star) == 1){
+	  prev_x <- prev_sv(x = seq(t_star, S, by = delta), y = S, lambda = lambda)
+	  prev[x >= (y - S) & x <= (y - t_star)] <- prev_x
+	  prev[x > (y - t_star) & x <= y] <- 1
   }
-
-
-prev_lambda_alpha_y <- function(x = 0:omega, y = max(x), lambda = 0, alpha = 1, S = 30, pad = TRUE, omega = 110){
-	
+  if (sign(t_star) == -1){
+	  prev_x <- prev_sv(x = seq(0, S + t_star, by = delta), y = S, lambda = lambda)
+	  prev[x >= (y-S-t_star) & x <= (y)] <- prev_x
+  }
+  if (sign(t_star) == 0){
+	  prev_x <- prev_sv(x = seq(0, S, by = delta), y = S, lambda = lambda)
+	  prev[x >= (y-S) & x <= (y)] <- prev_x
+  }
+  prev[x > y] <- NA
+  
+  return(list(x = x, y = prev))
 }
 
 
+# show some different combos
+plot(NULL, type = "n", xlim = c(0,50), ylim = c(0,1))
+lines(prev_lambda_alpha_y(y=50,alpha=1,lambda=0,S=20))
+lines(prev_lambda_alpha_y(y=50,alpha=.5,lambda=0,S=20))
+lines(prev_lambda_alpha_y(y=50,alpha=1.5,lambda=0,S=20))
+lines(prev_lambda_alpha_y(y=50,alpha=.5,lambda=.5,S=20))
+prev_lambda_alpha_y(y=50,alpha=.5,lambda=.5,S=20)$prev
 # that is, get the marginal prevalence by age x assuming we specify 
 # lambda (single value or vector thereof)
 # alpha (single value or vector thereof)
 # lx (standard lifetable lx, but inside we'll get quantiles from it)
 # the use the above prev_lambda_alpha_y() to get the prev function for each lifespan
 
-prev_x_from_lambda_alpha <- function(lx, x=0:100, lambda = .5, alpha = .2, S = 1){
+prev_x_from_lambda_alpha <- function(
+		lx, 
+		x = seq(0, omega, by = delta), 
+		lambda = .5, 
+		alpha = .5, 
+		S = 20, 
+		delta = .05, 
+		omega = 110,
+		q = seq(1,0,by=-.01)){
   
   
   # get ages when survival is 1, .99, .98, ..., .01, 0
-  q <- seq(1,0,by=-.01)
+  
   lives_lx <- life_bins(lx, 0:110, probs = q )[-1]
   
   # vectorize to set flexible shapes by age
@@ -326,15 +368,30 @@ prev_x_from_lambda_alpha <- function(lx, x=0:100, lambda = .5, alpha = .2, S = 1
   Prev_lifespan = matrix(0, ncol=length(x), nrow=length(lives_lx))
   for (i in 1:length(lives_lx)){
     # i = 2
-    Prev_lifespan[i,] = prev_lambda_alpha_y(x, y = lives_lx[i], lambda[i], alpha[i], S[i])[[2]]
+    Prev_lifespan[i,] = prev_lambda_alpha_y(
+			x = x, 
+			y = lives_lx[i], 
+			lambda = lambda[i], 
+			alpha = alpha[i], 
+			S = S[i],
+			delta = delta,
+			omega = omega)$y
   }
-  
+  Prev_x <- colMeans(Prev_lifespan, na.rm = TRUE)
   # get mean
-  lives = sapply(x, function(x) sum(pmin(pmax(lives_lx-x, 0), 1)))
-  Prev_x = colSums(Prev_lifespan)/lives
-  return(list(Prev_x = Prev_x, Prev_lifespan = Prev_lifespan, lives = lives))
+#  lives = sapply(x, function(x) sum(pmin(pmax(lives_lx-x, 0), 1)))
+#  Prev_x = colSums(Prev_lifespan)/lives
+  return(list(Prev_x = Prev_x, Prev_lifespan = Prev_lifespan))
 }
 
+plot(seq(0,110,by=.05),prev_x_from_lambda_alpha(lx, 
+		x = seq(0,110,by=.05), 
+		lambda = .01,
+		alpha = .1,
+		S = 20,
+		delta= .05,
+		omega = 110,
+		q = seq(1,0,by=-.002))$Prev_x, type = 'l', ylim = c(0,1))
 
 # should do similar to above but just spit out the 
 # variance statistic.
