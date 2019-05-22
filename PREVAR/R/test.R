@@ -6,11 +6,19 @@
 # y decimal death age
 # lambda is compression parameter | higher = more compressed
 prev_sv = function(x, y, lambda=.3){ # x vector of ages at death
-  p = ifelse(is.infinite(x*exp(x*lambda)), 0, x*exp(x*lambda))/(y*exp(y*lambda))
-  p = ifelse(p>1,0,p)
-  p
+	p = ifelse(is.infinite(x*exp(x*lambda)), 0, x*exp(x*lambda))/(y*exp(y*lambda))
+	p = ifelse(p>1,0,p)
+	p
 }
 
+
+# show how flexible lambda is
+#lambda_ex = seq(0, 50, .05)
+#col<-rainbow(length(lambda_ex))
+#plot(0,0, col=0, ylim = c(0,1), xlim=c(0,10), xlab='x', ylab='prev')
+#for (i in 1:length(lambda_ex)){
+#  lines(seq(0, 10, .05), prev_sv(seq(0, 10, .05), 10, lambda_ex[i]), col=col[i])
+#}
 
 # show how flexible lambda is
 #lambda_ex = seq(0, 50, .05)
@@ -44,6 +52,7 @@ fun_opt2 = function(lambda, Ages, y, lives, Pi_obs, decreasing = TRUE){
     Pi_hat_Age = c(Pi_hat_Age, Pi_hat_Age_i)
   }
   sum((Pi_obs - Pi_hat_Age/lives)^2)
+
 }
 
 ## ineq function
@@ -56,12 +65,12 @@ fun_opt2 = function(lambda, Ages, y, lives, Pi_obs, decreasing = TRUE){
 #}
 
 fun_ineq = function(lambda, Ages, y, lives, Pi_obs, decreasing = TRUE){
-  if (decreasing){
-    z <- diff(lambda)
-  } else {
-    z <- -diff(lambda)
-  }
-  z
+    if (decreasing){
+		z <- diff(lambda)
+	} else {
+		z <- -diff(lambda)
+	}
+	z
 }
 
 # super saturated one
@@ -69,7 +78,6 @@ fun_ineq = function(lambda, Ages, y, lives, Pi_obs, decreasing = TRUE){
 optim_funct = function(y, Pi_obs, iter = 10){
   # iter optim function
   require(Rsolnp)
-  
   # number individuals
   n = length(y) 
   
@@ -102,6 +110,7 @@ optim_funct = function(y, Pi_obs, iter = 10){
                     y = y, 
                     lives = lives, 
                     Pi_obs = Pi_obs$Pi)
+
     lambda_hat = matrix(optim.s$pars, nrow=1)
     lambda_hats = rbind(lambda_hats, lambda_hat)
     
@@ -215,6 +224,7 @@ abline(a=0,b=1)
 
 # --------------------------------- analytic prevs -----------------------------------------------
 
+
 # get the within-lifespan prevalence function
 # where:
 # x is an age grid, not necessarily integer
@@ -289,11 +299,17 @@ prev_lambda_alpha_y <- function(x = 0:omega, y = max(x), lambda = 1, alpha = 1, 
   }
 
 
+prev_lambda_alpha_y <- function(x = 0:omega, y = max(x), lambda = 0, alpha = 1, S = 30, pad = TRUE, omega = 110){
+	
+}
+
+
 # that is, get the marginal prevalence by age x assuming we specify 
 # lambda (single value or vector thereof)
 # alpha (single value or vector thereof)
 # lx (standard lifetable lx, but inside we'll get quantiles from it)
 # the use the above prev_lambda_alpha_y() to get the prev function for each lifespan
+
 prev_x_from_lambda_alpha <- function(lx, x=0:100, lambda = .5, alpha = .2, S = 1){
   
   
@@ -347,6 +363,16 @@ out2 = prevar_from_lambda_alpha(lx, x=0:100, lambda = .8, alpha = .5, S = 3)
 plot(out2$Prevar_x)
 points(out2$Prevar2_x)
 plot(out2$Kurtosis_x); abline(h=0)
+
+prev_x_from_lambda_alpha <- function(){
+	
+}
+
+#
+prevar_from_lambda_alpha <- function(){
+	# should do similar to above but just spit out the 
+	# variance statistic.
+}
 
 # These two functions should suffice to make the presentation.
 
