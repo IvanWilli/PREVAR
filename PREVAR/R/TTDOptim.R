@@ -1,4 +1,4 @@
-fun_opt = function(pars, x , lx, 
+fun_opt = function(pars, x , lx, S,
                    delta,  omega , q , xout, xobj,
                    Pi_obs){
 
@@ -13,9 +13,11 @@ fun_opt = function(pars, x , lx,
           bl = pars[2]
           aa = pars[3]
           ba = pars[4] 
-          S = pars[5] 
-          lambdas = lives_lx * bl + al
-          alphas = lives_lx * ba + aa
+          
+          # lambdas = lives_lx * bl + al
+          lambdas = exp(lives_lx * bl) * al
+          # alphas = lives_lx * ba + aa
+          alphas = exp(lives_lx * ba) * aa
           Ss = rep(S, length.out = length(lives_lx))
           # plot(lives_lx, lambdas, xlim=c(0,100), ylim=c(0,10)); plot(lives_lx, alphas, xlim=c(0,100), ylim=c(0,2))
           
@@ -40,16 +42,16 @@ fun_opt = function(pars, x , lx,
 }
 
 
-param_Lbounds = c(0,   0.001,   0.0001,  .001,  5)
-param_Ubounds = c(5,   .1,      2,       .1,   20)
-param_0 = c(1, .05, .1, 0.01, 10)
+param_Lbounds = c(0,   0.001,   0.0001,  .001)
+param_Ubounds = c(5,   .1,      2,       .1)
+param_0 =       c(1,   .05,    .1,       0.01)
 
 # require(Rsolnp)
 optim.s = solnp(param_0,    # starting pars
                 fun = fun_opt,     # minimize this
                 LB = param_Lbounds, 
                 UB = param_Ubounds,
-                x = seq(0, omega, by = delta), lx = lx, 
+                x = seq(0, omega, by = delta), lx = lx, S = 10,
                 delta = .05,  omega = 110, q = seq(1,0,by=-.01), 
                 xout=0:100, xobj = 30:80,
                 Pi_obs =.4/(1+exp(-.1*(xout-80))),
