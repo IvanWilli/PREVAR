@@ -357,8 +357,50 @@ prev_x_from_lambda_alpha <- function(
   # get mean
 #  lives = sapply(x, function(x) sum(pmin(pmax(lives_lx-x, 0), 1)))
 #  Prev_x = colSums(Prev_lifespan)/lives
-  return(list(Prev_x = Prev_x, Prev_lifespan = Prev_lifespan))
+  return(list(Prev_x = Prev_x, Prev_lifespan = Prev_lifespan, x = x))
 }
+
+# For fixed rewards the variance is *zero* unless alpha, lambda, S vary over age.
+rowSums(Prev_lifespan,na.rm=TRUE) * delta
+# for binomal variance we'd need to invert the prevalence curve 
+# in each lifespan. Make sense? Or at least do a discrete inversion,
+# in case a prevalence doesn't make it to 1 by death.
+# that is a to-do.
+
+# Now make a demonstrative plot for IW:
+q        <-  seq(1, 0, by = -.05)
+lives_lx <- round(life_bins(lx, 0:110, probs = q)[-1])
+xx       <- seq(0, 110, by = .1)
+S        <- lives_lx * .1 # 10% of life assume
+alphas    <- seq(.1, .5, length = length(lives_lx))
+lambdas  <- seq(5, .5, length = length(lives_lx))
+plot(NULL, type = 'n', xlab = "Age", ylab = "Proportion", axes = FALSE, xlim = c(0,110), ylim=c(0,1))
+rect(0,q[-length(q)],lives_lx,q[-1], border = gray(.8))
+lines(c(0,rep(lives_lx,each=2),0), rep(q,each=2))
+
+for (i in 1:length(lives_lx)){
+	pxi <- prev_lambda_alpha_y(
+			x = x, 
+			y = lives_lx[i], 
+			lambda = lambdas[i], 
+			alpha = alphas[i], 
+			S = S[i],
+			delta = .1,
+			omega = omega)
+	xx <- pxi$x
+	pxi <- pxi$y
+	# scale down
+	pxi <- pxi * .05
+	rem <- is.na(pxi) | pxi == 0
+	ends <- range(xx[!rem])
+	polygon(
+			x=c(ends[1],xx[!rem],ends[2]),
+			y=c(q[i+1], pxi[!rem] + q[i+1], q[i+1]) ,
+			col = "black"
+	)
+}
+
+
 
 #prev_lifespan_inverse <- function(x, prev_lifespan,y){
 #	# remove NAs
