@@ -372,6 +372,7 @@ rowSums(Prev_lifespan,na.rm=TRUE) * delta
 
 # -------------------------------------------------
 # Now make a demonstrative plot for IW:
+omega <- 110
 q        <-  seq(1, 0, by = -.05)
 lives_lx  <- round(life_bins(lx, 0:110, probs = q)[-1])
 lives_lx[lives_lx>omega] <- omega
