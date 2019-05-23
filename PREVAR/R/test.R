@@ -436,29 +436,29 @@ var_L^.5/mean(prev_L)
 #	
 #}
 
-Prev_lifespan <- prev_x_from_lambda_alpha(lx, 
-		x = seq(0,110,by=.05), 
-		lambda = 10,
-		alpha = .2,
-		S = 20,
-		delta= .05,
-		omega = 110,
-		q = seq(1,0,by=-.002))$Prev_lifespan
+
+Prev_lifespan <- prev_x_from_lambda_alpha(lx)$Prev_lifespan
 
 # a function to bin prevalence into single ages
 bin_prev_x <- function(prev_x, 
                        xin = seq(0,110,by=.05), 
                        xout = 0:100){
-  
-  trunc(xin) 
-  
-  for (i in 1:xout){
-    colSums(prev_x[,xout[i]])
+  delta_implied = diff(xin)[1]
+  xout_index = trunc(xin)
+  prev_xout = matrix(0, nrow=nrow(prev_x), ncol=length(xout))
+  for (ls in 1:nrow(prev_x)){
+    age_d = sum(!is.na(prev_x[ls,])) * delta_implied
+    for (age in xout){
+      # have to take account for deaths between integer ages
+      prev_xout[ls,age+1] = sum(prev_x[ls,xout_index==age] * delta_implied) / min(1,age_d-age, na.rm = T)
+    }
   }
-	
+  prev_xout
 }
 
-
+Prev_lifespan_bin = bin_prev_x(prev_x_from_lambda_alpha(lx)$Prev_lifespan, 
+                               xin = seq(0,110,by=.05), 
+                               xout = 0:100)
 
 plot(seq(0,110,by=.05),prev_x_from_lambda_alpha(lx, 
 		x = seq(0,110,by=.05), 
