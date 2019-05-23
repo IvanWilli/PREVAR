@@ -225,6 +225,25 @@ abline(a=0,b=1)
 # --------------------------------- analytic prevs -----------------------------------------------
 
 
+# a utility to help optimize for t_star, which scales the prevalence area by 
+# shifting the prevalence curve (implied by alpha and lambda) left or right out of the window S
+get_shift = function(t_star, alpha, lambda, S){ 
+	
+	# https://www.wolframalpha.com/input/?i=%5Cint_0%5Et%7Bx%2Ft*%5Cexp((x-t)*%5Clambda)%7D
+	# Area_hat = (lambda * t_star + exp(lambda * -t_star) - 1) / (lambda^2) / t_star
+	
+	if (sign(t_star) == 1){
+		Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
+		
+	} else {
+		if (sign(t_star) == -1){
+			Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
+		} 
+	}
+	
+	
+	((alpha * (S/2)) - (Area_lambda_S)) ^ 2
+}
 # get the within-lifespan prevalence function
 # where:
 # x is an age grid, not necessarily integer
@@ -261,55 +280,10 @@ prev_lambda_alpha_y <- function(
   # 0      y-S      y    t*
   # |______|________|______|
   #            S      t*-S
-  
-  # y = 70
-  # x = 0:100
-  # S = 5
-  # alpha = 2
-  # lambda = .1
 
-  # plot(seq(0,S,.05), prev_sv(seq(0,S,.05), y, lambda), t='l')
-  # text(1,0, integrate(f = prev_sv, lower =  0, upper = S, y = S, lambda = lambda)$value)
-
-  # Define area implied by alpha
-#  Area = ifelse(alpha==1, S / 2,
-#                ifelse(alpha>1, S - S/alpha/2,
-#                       alpha*S/2))
-#  Area = max(min(Area, S), 0) # set limits
-#  # text(2, 0, Area)
-  
-  # get new limit t*
-  get_shift = function(t_star, alpha, lambda, S){ 
-    
-    # https://www.wolframalpha.com/input/?i=%5Cint_0%5Et%7Bx%2Ft*%5Cexp((x-t)*%5Clambda)%7D
-    # Area_hat = (lambda * t_star + exp(lambda * -t_star) - 1) / (lambda^2) / t_star
-    
-		if (sign(t_star) == 1){
-			Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
-			
-		} else {
-			if (sign(t_star) == -1){
-				Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
-			} 
-		}
-		
-		
-	((alpha * (S/2)) - (Area_lambda_S)) ^ 2
-  }
- 
    t_star = optimize(get_shift, interval = c(-S, S), alpha = alpha, lambda = lambda, S = S, tol = 1e-12)$minimum
   
    t_star <- round(t_star * 1/delta) * delta
-   #  
-  # plot(seq(0,S,.05), prev_sv(seq(0,S,.05), S, lambda), t='l')
-  # lines(seq(0,t_star,.05), prev_sv(seq(0,t_star,.05), t_star, lambda), col=2)
-  
-  # Define shrink -> new onset age
-#  x_star = y - t_star    
-#  
-  # give prevalence interval
-#  prev =  c(rep(0,sum(x<x_star)), 
-#            prev_sv((x-x_star)[x>=x_star], t_star, lambda))
 
   prev   <- x * 0
   if (sign(t_star) == 1){
@@ -329,6 +303,8 @@ prev_lambda_alpha_y <- function(
   
   return(list(x = x, y = prev))
 }
+
+
 
 
 # show some different combos
@@ -384,14 +360,61 @@ prev_x_from_lambda_alpha <- function(
   return(list(Prev_x = Prev_x, Prev_lifespan = Prev_lifespan))
 }
 
+#prev_lifespan_inverse <- function(x, prev_lifespan,y){
+#	# remove NAs
+#	nas 			<- is.na(prev_lifespan)
+#	prev_lifespan 	<- prev_lifespan[!nas]
+#	x 				<- x[!nas]
+#	prev_lifespan   <- prev_lifespan / max(prev_lifespan)
+#	splinefun(x~prev_lifespan)
+#}
+
+
+#Prev_lifespan_to_prev_dist <- function(Prev_lifespan){
+#	# this isn't so straightforward.
+#	# we need to get the inverse function from each lifespan prevalance.
+#	
+#	
+#	
+#	
+#	
+#}
+
+Prev_lifespan <- prev_x_from_lambda_alpha(lx, 
+		x = seq(0,110,by=.05), 
+		lambda = 10,
+		alpha = .2,
+		S = 20,
+		delta= .05,
+		omega = 110,
+		q = seq(1,0,by=-.002))$Prev_lifespan
+
+# a function to bin prevalence into single ages
+bin_prev_x <- function(prev_x){
+	
+}
+
+
+
 plot(seq(0,110,by=.05),prev_x_from_lambda_alpha(lx, 
 		x = seq(0,110,by=.05), 
-		lambda = .01,
-		alpha = .1,
+		lambda = 10,
+		alpha = .2,
 		S = 20,
 		delta= .05,
 		omega = 110,
 		q = seq(1,0,by=-.002))$Prev_x, type = 'l', ylim = c(0,1))
+
+plot(seq(0,110,by=.05),prev_x_from_lambda_alpha(lx, 
+				x = seq(0,110,by=.05), 
+				lambda = 0,
+				alpha = 1,
+				S = 20,
+				delta= .05,
+				omega = 110,
+				q = seq(1,0,by=-.002))$Prev_x, type = 'l', ylim = c(0,1))
+
+
 
 # should do similar to above but just spit out the 
 # variance statistic.
