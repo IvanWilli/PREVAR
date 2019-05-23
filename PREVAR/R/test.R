@@ -367,13 +367,15 @@ rowSums(Prev_lifespan,na.rm=TRUE) * delta
 # in case a prevalence doesn't make it to 1 by death.
 # that is a to-do.
 
+# -------------------------------------------------
 # Now make a demonstrative plot for IW:
 q        <-  seq(1, 0, by = -.05)
-lives_lx <- round(life_bins(lx, 0:110, probs = q)[-1])
-xx       <- seq(0, 110, by = .1)
-S        <- lives_lx * .1 # 10% of life assume
+lives_lx  <- round(life_bins(lx, 0:110, probs = q)[-1])
+xx        <- seq(0, 110, by = .1)
+S         <- lives_lx * .1 # 10% of life assume
 alphas    <- seq(.1, .5, length = length(lives_lx))
-lambdas  <- seq(5, .5, length = length(lives_lx))
+lambdas   <- seq(5, .5, length = length(lives_lx))
+
 plot(NULL, type = 'n', xlab = "Age", ylab = "Proportion", axes = FALSE, xlim = c(0,110), ylim=c(0,1))
 rect(0,q[-length(q)],lives_lx,q[-1], border = gray(.8))
 lines(c(0,rep(lives_lx,each=2),0), rep(q,each=2))
@@ -400,7 +402,7 @@ for (i in 1:length(lives_lx)){
 	)
 }
 
-
+# -------------------------------------------------
 
 #prev_lifespan_inverse <- function(x, prev_lifespan,y){
 #	# remove NAs
