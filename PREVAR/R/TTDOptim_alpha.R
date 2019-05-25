@@ -128,7 +128,7 @@ for (i in 1:length(lambdas_scenarios)) {
 # takes 7 minutes
 
 # Visual Goodness of Fit
-plot(0:100, Pi_Obs, xlim = c(0,100), ylim = c(0,1), 
+plot(xout, Pi_Obs, xlim = c(0,100), ylim = c(0,1), 
 		xlab = 'Ages', ylab = 'Prevalence', main = 'Scenarios Fits', 
 		type = 'l', lwd = 2)
 abline(v = c(30,80), col = 'grey', lty = 2)

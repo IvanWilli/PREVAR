@@ -278,8 +278,20 @@ alpha_fun = function(a=2, b=0, family = 'lineal', x=0:100){
   alphas
 }
 
+#plot(alpha_fun(.5,.01, family="lineal"))
+##  1024 64  0 4 64 144 64
 
 
+# started experimenting with polynomials
+my_poly <- function(pars,x){
+	n        <- length(pars)
+	orders   <- 1:n - 1
+	rowSums(outer(x,orders,"^") %*% diag(pars) )
+}
 
+alpha_poly <- function(x,...){
+	pars <- unlist(list(...))
+	my_poly(pars, x)
+}
 
 
