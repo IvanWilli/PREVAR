@@ -46,12 +46,12 @@ life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
 get_shift = function(t_star, alpha, lambda, S){   
   # the formula depends on whether we shift left or right
   if (sign(t_star) == 1){
-	  Area_lambda_S <- prev_sv_int(from = t_star, to = S, y = S, lambda = lambda)
+	  Area_lambda_S <- prev_sv_int(from = t_star, to = S, y = S, lambda = lambda) + t_star
     #Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
     
   } else {
     if (sign(t_star) == -1){
-		Area_lambda_S <-  prev_sv_int(from = t_star, to = S, y = S + t_star, lambda = lambda)
+		Area_lambda_S <-  prev_sv_int(from = 0, to = -t_star, y = S, lambda = lambda)
       #Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
     } 
   }
@@ -105,7 +105,7 @@ prev_lambda_alpha_y <- function(
 #  prev_x     <- prev_sv(x = seq(0, S + t_star, by = delta), y = S, lambda = lambda)
 #  prev[x >= (y-S-t_star) & x <= (y)]     <- prev_x
   if (sign(t_star) == -1){
-	  x.i        <- seq(0, S + t_star, by = delta)
+	  x.i        <- seq(0, -t_star, by = delta)
 	  x.int      <- round(rev(y - x.i) * (1 / delta))
 	  lbint      <- min(x.int)
 	  ubint      <- max(x.int)
@@ -114,7 +114,7 @@ prev_lambda_alpha_y <- function(
 #	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
 #		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
 #	  }
-	  prev[xint >= lbint & xint <= yint]     <- prev_x[x.int  >= 0]
+	  prev[xint >= lbint & xint <= ubint ]     <- prev_x[x.int  >= 0]
   }
   
   
@@ -128,7 +128,7 @@ prev_lambda_alpha_y <- function(
   return(list(x = x, y = prev))
 }
 
-plot(prev_lambda_alpha_y(lambda=.0001,y=50,alpha=2))
+#plot(prev_lambda_alpha_y(seq(0,50,by=delta),lambda=0,y=50,alpha=.1),type='l',ylim=c(0,1))
 # TR: this was mostly problem withh logical matching of digits that were
 # obtained via different operations. Straight 'R inferno'. 
 # IW -> to get the warnings: print combinations with error, but still no finding the pattern
