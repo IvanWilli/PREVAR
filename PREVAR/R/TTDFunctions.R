@@ -17,12 +17,19 @@ prev_sv = function(x, y, lambda=.3){ # x vector of ages at death
 
 # analytic integral: might speed up optimizations:
 prev_sv_int <- function(y,from=0,to=y,lambda=.3){
+	
+	# need logical to account for lambda == 0
+	if (lambda == 0){
+		return(y/2 - (from^2)/(2*y) - (y-to)*(to/y) - (y-to)*(1-to/y)/2)
+	}
+	
 	(exp(to * lambda) * 
 				(-1 + to  * lambda) + 
 				exp(from * lambda) * 
 				(1 - from * lambda)
 				) / (exp(y * lambda) * y * lambda^2)
 }
+
 # get the ages to which specified quantiles refer.
 life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
   lx <- lx / lx[1]
@@ -68,9 +75,7 @@ prev_lambda_alpha_y <- function(
   # 0      y-S      y    t*
   # |______|________|______|
   #            S      t*-S
-  
   t_star <- optimize(get_shift, interval = c(-S, S), alpha = alpha, lambda = lambda, S = S, tol = 1e-12)$minimum
-  
   t_star <- round(t_star * 1/delta) * delta
   
   prev   <- x * 0
@@ -82,17 +87,14 @@ prev_lambda_alpha_y <- function(
 	
   if (sign(t_star) == 1){
 	  x.i       <- seq(t_star, S, by = delta)
-	  
 	  x.int     <- round(rev(y - x.i) * (1 / delta))
 	  lbint     <- min(x.int)
 	  ubint     <- max(x.int)
+	  
 	  prev_x    <- prev_sv(x = x.i, y = S, lambda = lambda) 
-	  
-	  # TR: just a check for debugging
-	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
-		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
-	  }
-	  
+#	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
+#		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
+#	  }
 	  if (t_star < y){
 		  prev[xint >= lbint & xint <= ubint]  <- prev_x[x.int >= 0]
 	  }
@@ -105,16 +107,13 @@ prev_lambda_alpha_y <- function(
   if (sign(t_star) == -1){
 	  x.i        <- seq(0, S + t_star, by = delta)
 	  x.int      <- round(rev(y - x.i) * (1 / delta))
-	  
 	  lbint      <- min(x.int)
-	  ubint       <- max(x.int)
-	  prev_x     <- prev_sv(x = x.i, y = S, lambda = lambda)
-	
-	 
-	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
-		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
-	  }
+	  ubint      <- max(x.int)
 	  
+	  prev_x     <- prev_sv(x = x.i, y = S, lambda = lambda)
+#	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
+#		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
+#	  }
 	  prev[xint >= lbint & xint <= yint]     <- prev_x[x.int  >= 0]
   }
   
@@ -129,6 +128,9 @@ prev_lambda_alpha_y <- function(
   return(list(x = x, y = prev))
 }
 
+plot(prev_lambda_alpha_y(lambda=.0001,y=50,alpha=2))
+# TR: this was mostly problem withh logical matching of digits that were
+# obtained via different operations. Straight 'R inferno'. 
 # IW -> to get the warnings: print combinations with error, but still no finding the pattern
 # for (lambda in seq(0,2,.1)){
 #   for (alpha in seq(0,2,.1)){
