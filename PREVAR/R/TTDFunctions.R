@@ -21,8 +21,7 @@ life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
   # https://www.wolframalpha.com/input/?i=%5Cint_0%5Et%7Bx%2Ft*%5Cexp((x-t)*%5Clambda)%7D
   # Area_hat = (lambda * t_star + exp(lambda * -t_star) - 1) / (lambda^2) / t_star
 
-get_shift = function(t_star, alpha, lambda, S){ 
-  
+get_shift = function(t_star, alpha, lambda, S){   
   # the formula depends on whether we shift left or right
   if (sign(t_star) == 1){
     Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
@@ -35,6 +34,7 @@ get_shift = function(t_star, alpha, lambda, S){
   
   ((alpha * (S/2)) - (Area_lambda_S)) ^ 2
 }
+
 
 
 prev_lambda_alpha_y <- function(
@@ -63,6 +63,7 @@ prev_lambda_alpha_y <- function(
     x_implied <- seq((y - S), (y - t_star), by = delta)
     prev[x >= (y - S) & x <= (y - t_star)] <- prev_x[x_implied >= 0]
     prev[x >= (y - t_star) & x <= y]        <- 1
+
   }
   if (sign(t_star) == -1){
     prev_x     <- prev_sv(x = seq(0, S + t_star, by = delta), y = S, lambda = lambda)
@@ -119,18 +120,20 @@ prev_x_from_lambda_alpha <- function( lives_lx,
     Ss <- rep(Ss, n)
   }
   
+
   # get prevalence trajectory for each lifespan
   Prev_lifespan <- matrix(0, ncol = length(x), nrow = length(lives_lx))
   for (i in 1:length(lives_lx)){
     # i = 100
     Prev_lifespan[i,] <- prev_lambda_alpha_y(
-                                              x = x, 
-                                              y = lives_lx[i], 
-                                              lambda = lambdas[i], 
-                                              alpha = alphas[i], 
-                                              S = Ss[i],
-                                              delta = delta,
-                                              omega = omega)$y
+
+                                    x = x, 
+                                    y = lives_lx[i], 
+                                    lambda = lambdas[i], 
+                                    alpha = alphas[i], 
+                                    S = Ss[i],
+                                    delta = delta,
+                                    omega = omega)$y
   }
   Prev_x <- colMeans(Prev_lifespan, na.rm = TRUE)
   # get mean
@@ -141,6 +144,7 @@ prev_x_from_lambda_alpha <- function( lives_lx,
 
 # TR: OK if it works: this is way more complicated than I was imagining
 # what about:
+
 bin_prev_x_tr <- function(prev_x,xin){
   xout <- floor(xin)
   tapply(prev_x, xout, mean, na.rm = TRUE)
@@ -150,6 +154,7 @@ bin_prev_x_tr <- function(prev_x,xin){
     # prev_x = prev_x_from_lambda_alpha(lives_lx, x = seq(0, omega, by = delta), lambdas = .5, alphas = .5, Ss = 20, delta = .05, omega = 110)$Prev_lifespan
     # bin_prev_x_tr(pp, xin = x)
     # bin_prev_x(pp)
+
 
 # a function to bin prevalence into single ages
 bin_prev_x <- function(prev_x, 
@@ -173,7 +178,9 @@ bin_prev_x <- function(prev_x,
 
 
 # TR: there's a function colMeans() that would make this easier. No need for denom, right?
+
 # IW: I think doesn't take care of (lives_lx-x) time-persons. Maybe I'm wrong
+
 # funct to sum cross ages
 prev_cross_x = function(Prev_lifespan_bin, lives_lx, xout){
   alives = sapply(xout, function(x) sum(pmin(pmax(lives_lx-x, 0), 1)))
