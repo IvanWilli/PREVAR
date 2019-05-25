@@ -2,12 +2,27 @@
 # x decimal evaluated age
 # y decimal death age
 # lambda is compression parameter | higher = more compressed
+#prev_sv = function(x, y, lambda=.3){ # x vector of ages at death
+#  p = ifelse(is.infinite(x*exp(x*lambda)), 0, x*exp(x*lambda))/(y*exp(y*lambda))
+#  p = ifelse(p>1,0,p)
+#  p
+#}
+
+# more robust to higher lambda:
 prev_sv = function(x, y, lambda=.3){ # x vector of ages at death
-  p = ifelse(is.infinite(x*exp(x*lambda)), 0, x*exp(x*lambda))/(y*exp(y*lambda))
-  p = ifelse(p>1,0,p)
-  p
+	p        <- (x * exp(lambda * (x - y)))/y
+	p[p > 1 | is.nan(p)] <- 0
+	p
 }
 
+# analytic integral: might speed up optimizations:
+prev_sv_int <- function(y,from=0,to=y,lambda=.3){
+	(exp(to * lambda) * 
+				(-1 + to  * lambda) + 
+				exp(from * lambda) * 
+				(1 - from * lambda)
+				) / (exp(y * lambda) * y * lambda^2)
+}
 # get the ages to which specified quantiles refer.
 life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
   lx <- lx / lx[1]
@@ -24,11 +39,13 @@ life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
 get_shift = function(t_star, alpha, lambda, S){   
   # the formula depends on whether we shift left or right
   if (sign(t_star) == 1){
-    Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
+	  Area_lambda_S <- prev_sv_int(from = t_star, to = S, y = S, lambda = lambda)
+    #Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S, lambda = lambda)$value + t_star
     
   } else {
     if (sign(t_star) == -1){
-      Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
+		Area_lambda_S <-  prev_sv_int(from = t_star, to = S, y = S + t_star, lambda = lambda)
+      #Area_lambda_S = integrate(f = prev_sv, lower =  (t_star), upper = S, y = S + t_star, lambda = lambda)$value
     } 
   }
   
@@ -46,6 +63,7 @@ prev_lambda_alpha_y <- function(
   omega = 110,
   delta = .05){
   
+  xint <- round(x * (1/delta))
   # start with....
   # 0      y-S      y    t*
   # |______|________|______|
@@ -56,24 +74,57 @@ prev_lambda_alpha_y <- function(
   t_star <- round(t_star * 1/delta) * delta
   
   prev   <- x * 0
-  
+  #names(prev) <- x
   # TR: there is index sloppiness in here still.
+  # TR: try indexing differently. Use integers?
+	# yint =1200; lbint= 400; ubint= 528; t_star= 33.55; S= 40; lambda= 0.1
+	yint <- round(y * (1 / delta))
+	
   if (sign(t_star) == 1){
-    prev_x    <- prev_sv(x = seq(t_star, S, by = delta), y = S, lambda = lambda) 
-    x_implied <- seq((y - S), (y - t_star), by = delta)
-    prev[x >= (y - S) & x <= (y - t_star)] <- prev_x[x_implied >= 0]
-    prev[x >= (y - t_star) & x <= y]        <- 1
-
+	  x.i       <- seq(t_star, S, by = delta)
+	  
+	  x.int     <- round(rev(y - x.i) * (1 / delta))
+	  lbint     <- min(x.int)
+	  ubint     <- max(x.int)
+	  prev_x    <- prev_sv(x = x.i, y = S, lambda = lambda) 
+	  
+	  # TR: just a check for debugging
+	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
+		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
+	  }
+	  
+	  if (t_star < y){
+		  prev[xint >= lbint & xint <= ubint]  <- prev_x[x.int >= 0]
+	  }
+	  prev[xint >= ubint & xint <= yint]        <- 1  
+	  
   }
+  
+#  prev_x     <- prev_sv(x = seq(0, S + t_star, by = delta), y = S, lambda = lambda)
+#  prev[x >= (y-S-t_star) & x <= (y)]     <- prev_x
   if (sign(t_star) == -1){
-    prev_x     <- prev_sv(x = seq(0, S + t_star, by = delta), y = S, lambda = lambda)
-    prev[x >= (y-S-t_star) & x <= (y)]     <- prev_x
+	  x.i        <- seq(0, S + t_star, by = delta)
+	  x.int      <- round(rev(y - x.i) * (1 / delta))
+	  
+	  lbint      <- min(x.int)
+	  ubint       <- max(x.int)
+	  prev_x     <- prev_sv(x = x.i, y = S, lambda = lambda)
+	
+	 
+	  if (sum(xint >= lbint & xint <= ubint) != sum(x.int >= 0)){
+		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
+	  }
+	  
+	  prev[xint >= lbint & xint <= yint]     <- prev_x[x.int  >= 0]
   }
+  
+  
   if (sign(t_star) == 0){
-    prev_x     <- prev_sv(x = seq(0, S, by = delta), y = S, lambda = lambda)
-    prev[x >= (y-S) & x <= (y)]            <- prev_x
+	  lbint      <- round((y - S) * (1 / delta))
+      prev_x     <- prev_sv(x = seq(0, S, by = delta), y = S, lambda = lambda)
+      prev[xint >= lbint & xint <= yint]            <- prev_x
   }
-  prev[x > y] <- NA
+  prev[xint > yint] <- NA
   
   return(list(x = x, y = prev))
 }

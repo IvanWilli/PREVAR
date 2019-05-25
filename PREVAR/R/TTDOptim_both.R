@@ -9,6 +9,7 @@ fun_opt_both = function(pars,
                           Pi_obs){
   # lives
   lives_lx <- life_bins(lx, 0:110, probs = q )[-1]
+  lives_lx <- round(lives_lx * (1/delta))*delta
   lives_lx[lives_lx>omega] <- omega
   
   # pars = param_0
