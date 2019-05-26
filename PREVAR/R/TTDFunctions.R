@@ -296,7 +296,7 @@ my_poly <- function(pars,x){
 # alpha ranges from 0-2, so 2*expit should guarantee that.
 alpha_poly <- function(x,...){
 	pars <- unlist(list(...))
-	out  <- 2 * expit(my_poly(pars, sqrt(x)))
+	out  <- 2 * expit(my_poly(pars, x))
 	out[is.nan(out)] <- 2
 	out[is.na(out)] <- 0
 	out
@@ -305,7 +305,7 @@ alpha_poly <- function(x,...){
 lambda_poly <- function(x,...){
 	pars <- unlist(list(...))
 	# strictly positive
-	out <- exp(my_poly(pars, sqrt(x)))
+	out <- exp(my_poly(pars, x))
 	out[is.nan(out)] <- 0
 	out[is.na(out)] <- 0
 	out

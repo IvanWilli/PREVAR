@@ -146,17 +146,16 @@ opt <- optim(c(0,0,0),
 		x=0:110,
 		lx=lx,
 		S=30,
-		lambda=.5,
+		lambda=.2,
 		delta=.05,
 		omega=110,
 		q = seq(1,0,by=-.005),
 		xout = 0:110,
 		xobj = 30:80,
-		Pi_obs = Pi_Obs,
-		method = "L-BFGS-B")
-
-plot(alpha_poly(0:110,c(.1,.1,-.03,-.003,.001,-.0001)))
-plot(lambda_poly(0:110,opt$par[4:6]))
+		Pi_obs = Pi_Obs)
+str(opt)
+plot(alpha_poly(0:110,opt$par[1:3]))
+#plot(lambda_poly(0:110,opt$par[4:6]))
 
 
 Prev_hat = prev_x_final(lives_lx, x, 
