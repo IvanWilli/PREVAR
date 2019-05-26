@@ -115,7 +115,7 @@ prev_lambda_alpha_y <- function(
 #		  stop(paste("yint=",yint,";lbint=",lbint,";ubint=",ubint,";y=",y,";t_star=",t_star,";S=",S,";lambda=",lambda))
 #	  }
 	  prev[xint >= lbint & xint <= ubint ]     <- prev_x[x.int  >= 0]
-  }
+ }
   
   
   if (sign(t_star) == 0){
@@ -281,6 +281,10 @@ alpha_fun = function(a=2, b=0, family = 'lineal', x=0:100){
 #plot(alpha_fun(.5,.01, family="lineal"))
 ##  1024 64  0 4 64 144 64
 
+expit <- function(x){
+	exp(x) / (1 + exp(x))
+}
+
 
 # started experimenting with polynomials
 my_poly <- function(pars,x){
@@ -289,9 +293,21 @@ my_poly <- function(pars,x){
 	rowSums(outer(x,orders,"^") %*% diag(pars) )
 }
 
+# alpha ranges from 0-2, so 2*expit should guarantee that.
 alpha_poly <- function(x,...){
 	pars <- unlist(list(...))
-	my_poly(pars, x)
+	out  <- 2 * expit(my_poly(pars, sqrt(x)))
+	out[is.nan(out)] <- 2
+	out[is.na(out)] <- 0
+	out
 }
 
+lambda_poly <- function(x,...){
+	pars <- unlist(list(...))
+	# strictly positive
+	out <- exp(my_poly(pars, sqrt(x)))
+	out[is.nan(out)] <- 0
+	out[is.na(out)] <- 0
+	out
+}
 
