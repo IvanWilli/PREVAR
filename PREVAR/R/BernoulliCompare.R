@@ -6,6 +6,7 @@ setwd("/home/tim/git/PREVAR/PREVAR")
 source("R/Data.R")
 source("R/utils.R")
 source("R/PrevRewards.R")
+source("R/BlockFunctions.R")
 
 # try at different granularities:
 
@@ -45,37 +46,25 @@ prev.01   <- prev_line(lx.01,0,.5)
 
 
 
-plot_traj <- function(traj,y,interval = 5,...){
-	trle <- rle(traj)
-	drop <- trle$values == 0
-	if (all(drop)){
-		return(NULL)
-	}
-	n    <- length(trle$lengths)
-	left <- c(0,cumsum(trle$lengths*interval))[-c(n+1)]
-	left <- left[!drop]
-	w    <- trle$lengths[!drop] * interval
-	rect(left,y,left+w,y+1,border = NA, ...)
-}
-e0block <- function(LTblock){
-	Di      <- rowSums(LTblock)
-	mean(Di)
-}
-varblock <- function(LTblock){
-	Di      <- rowSums(LTblock)
-	DLE     <- mean(Di) # same every time!
-	mean((Di - DLE)^2)
-}
+
+
+
+
+
+
 a5      <- seq(0,110,by=5)
+
+
 LTblock <- makeLTblock(lx_5,prev_5,radix=100,interval=5)
 lx_5_100 <- lx_5/(1e5/nrow(LTblock))
+
 plot(a5, lx_5_100, type= 's',
 		main = paste0("DLE(0) = ",e0block(LTblock),", sdDLE(0) = ",
 				     round(sqrt(varblock(LTblock)),2)))
 for (i in 1:nrow(LTblock)){
 	plot_traj(LTblock[i,],y=i-1,interval = 5,col=gray(.4))
 }
-
+lines(c(0,rep(a5,each=2),110),c(0,rep(prev_5,each=2),.5)*100)
 barplot(table(rowSums(LTblock)),space=0)
 
 
