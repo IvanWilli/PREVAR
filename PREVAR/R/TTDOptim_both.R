@@ -1,4 +1,5 @@
 ############ what is the 'disability mass' by time_to_death to replicate prev #########################
+########## coclutions downside ##############
 
 ############ get lambda and alpha ###############
 me <- system("hostname",intern=TRUE) 
@@ -12,7 +13,6 @@ source(file.path("R","TTDFunctions.R"))
 # objective function
 # objective function
 fun_opt_both = function(pars, 
-                        n_poly = c(1,1), 
                         x , lx, S,
                         delta,  omega , q , xout, xobj,
                         Pi_obs){
@@ -21,9 +21,10 @@ fun_opt_both = function(pars,
   lives_lx <- round(lives_lx * (1/delta))*delta
   lives_lx[lives_lx>omega] <- omega
   
-  # pars = param_0
-  alphas = pmin(my_poly(pars[1:(n_poly[1]+1)], lives_lx), 2)
-  lambdas = pmin(my_poly(pars[3:(n_poly[2]+1)], lives_lx), 2)
+  # pars = optim.s$pars
+  # pars = param_Lbounds + (param_Ubounds-param_Lbounds) * rep(runif(1),4)
+  alphas = pmin(my_poly(pars[1:2], lives_lx), 2)
+  lambdas = pmin(my_poly(pars[3:4], lives_lx), 7)
   
   # vectorize in case
   Ss = rep(S, length.out = length(lives_lx))
@@ -57,18 +58,27 @@ lives_lx <- life_bins(lx,x=0:110,q)
 lives_lx <- round(lives_lx * 1/delta) * delta
 lives_lx[lives_lx > omega] <- omega
 
-# just for lineal case
-param_0 =       c(.5,      .01,    0.00001,    .01)
-param_Lbounds = c(0.0001,  .00001, .000001,    .000001)
-param_Ubounds = c(2,       .05,    1,        .05  )
-
-S = 20 #same S for every
+S = 15 #same S for every
+x = seq(0, omega, by = delta)
 xout = 0:100
-xobj = 30:80 # fit priority
+xobj = 30:90 # fit priority
 # Possible observed prevalences
-Pi_Obs = .8/(1+exp(-.1*(xout-80)))
+# Pi_Obs = .8/(1+exp(-.1*(xout-80)))
+
+####-------- kinds of target prevalences
+Pi_Obs = prev_sv(xout, 100, .07) # works for lambdas > .05 !
+plot(xout, Pi_Obs, ylim=c(0,1))
+# Pi_Obs = .05* exp(.1*(xout-70))
 # Pi_Obs = .005*exp(.05*xout)
 # plot(0:100, Pi_Obs, xlim = c(0,100), ylim = c(0,1))
+####--------
+
+# just for lineal case
+param_Lbounds = c(.001,     .0001,  .000001,    .000000001)
+param_Ubounds = c(.5,       .05,     1,         .01)
+# param_0 =       param_Lbounds + (param_Ubounds-param_Lbounds) * runif(4)
+param_0 =       c(.05,      .005,    .05,        .00001)
+
 
 # Optimization
 # require(Rsolnp)
@@ -76,7 +86,6 @@ optim.s = solnp(param_0,    # starting pars
                 fun = fun_opt_both,     # minimize this
                 LB = param_Lbounds, 
                 UB = param_Ubounds,
-                n_poly = c(1,1),
                 S = S, # doy una constante
                 lx = lx, # mortality 
                 q = seq(1,0,by=-.01), 
@@ -85,11 +94,11 @@ optim.s = solnp(param_0,    # starting pars
                 xout = xout, # integer ages (could be implicit in future)
                 xobj = xobj, # fit priority
                 Pi_obs = Pi_Obs,
-                control = list(delta = .01, rho = 1.5, outer.iter = 50))
+                control = list(delta = .01, outer.iter = 50))
 
 # Visual Goodness of Fit
-alphas_optim = pmin(my_poly(optim.s$pars[1:(n_poly[1]+1)], lives_lx), 2)
-lambdas_optim = pmin(my_poly(optim.s$pars[3:(n_poly[2]+1)], lives_lx), 2)
+alphas_optim = pmin(my_poly(optim.s$pars[1:2], lives_lx), 2) #; plot(lives_lx, alphas_optim)
+lambdas_optim = pmin(my_poly(optim.s$pars[3:4], lives_lx), 7) #; plot(lives_lx, lambdas_optim)
 Prev_hat = prev_x_final(lives_lx, x, 
                         lambdas = lambdas_optim, 
                         Ss = rep(S, length.out = length(lives_lx)), 
@@ -99,79 +108,14 @@ plot(0:100, Pi_Obs, xlim = c(0,100), ylim = c(0,1), xlab = 'Ages', ylab = 'Preva
 abline(v = range(xobj), col = 'grey', lty = 2)
 points(xout, Prev_hat, t='l', col = 2)
 
-# IW = Good fit. Only tried with linealin both lambda and alpha
-# ONLY LINEAL, 
+#####################################################################
+# IW = Good fit for target prevalences with lambdas > .05 ! #########
+# that is, needs a exponential form away form linear case lambda=0 ##
+# If not, must calibrate the starting value (so sensitive) ##########
+#####################################################################
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-fun_opt_poly = function(pars, 
-                        x, 
-                        lx, 
-                        lambda = .5,
-                        S = 30,
-                        delta = .05, 
-                        omega = 110, 
-                        q = seq(1,0,by=.005) , 
-                        xout = 0:110, 
-                        xobj = 30:80,
-                        Pi_obs){
-  # lives
-  lives_lx <- life_bins(lx, x, probs = q )[-1]
-  lives_lx <- round(lives_lx * (1/delta))*delta
-  lives_lx[lives_lx>omega] <- omega
-  
-  
-  # vectorize in case
-  if (length(S) == 1){
-    Ss = rep(S, length.out = length(lives_lx))
-  }
-  
-  alphas   <- alpha_poly(lives_lx,pars[1:3])
-  #lambdas  <- lambda_poly(lives_lx, pars[4:6])
-  lambdas <- rep(lambda,length(lives_lx))
-  # get Prev_hat
-  Prev_hat = prev_x_final(lives_lx, x, lambdas, alphas, Ss, delta, omega, xout)
-  
-  # obj funct en rango objetivo
-  sum((Pi_obs[xobj+1] -Prev_hat[xobj+1]) ^2)
-}
-
-opt <- optim(c(0,0,0),
-             fun_opt_poly,
-             lower=-.5,
-             upper=.5,
-             x=0:110,
-             lx=lx,
-             S=30,
-             lambda=.2,
-             delta=.05,
-             omega=110,
-             q = seq(1,0,by=-.005),
-             xout = 0:110,
-             xobj = 30:80,
-             Pi_obs = Pi_Obs)
-str(opt)
-plot(alpha_poly(0:110,opt$par[1:3]))
-#plot(lambda_poly(0:110,opt$par[4:6]))
-
-
-Prev_hat = prev_x_final(lives_lx, x, 
-                        lambdas = rep(.5,length(lives_lx)), 
-                        Ss = rep(30, length.out = length(lives_lx)), 
-                        alphas = alpha_poly(lives_lx,opt$par[1:3]),
-                        delta, omega, xout)
-plot(0:100, Pi_Obs, xlim = c(0,100), ylim = c(0,1), xlab = 'Ages', ylab = 'Prevalence', main = 'Scenarios Fits')
-abline(v = range(xobj), col = 'grey', lty = 2)
-points(xout, Prev_hat, t='l', col = 2)
