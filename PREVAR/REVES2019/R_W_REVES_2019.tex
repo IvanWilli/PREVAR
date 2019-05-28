@@ -1,0 +1,155 @@
+
+\documentclass[20pt,usenames,dvipsnames]{beamer}
+
+\usepackage[ngerman,english]{babel}
+\usepackage{tikz}
+\usepackage[normalem]{ulem}
+\geometry{paperwidth=10in, paperheight=7.5in}
+\usepackage{animate}
+\usepackage{xcolor,colortbl}
+\usepackage{booktabs}
+\usepackage[utf8]{inputenc}
+
+
+\usepackage{color}
+\definecolor{mygray}{rgb}{0.8,0.8,0.8}
+\definecolor{yellow}{rgb}{1,1,0}
+
+\defbeamertemplate{description item}{align left}{\insertdescriptionitem\hfill}
+%%	should be the very last package to be loaded
+\usepackage{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%	Beginning of the document		%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%	titlepage - fixed frame:
+%%	========================
+
+% \begin{frame}
+% 	\titlepage
+% \end{frame}
+\begin{frame}[plain]
+	%\titlepage
+	\vspace{-3cm}
+ \centerline{\includegraphics[scale=.165]{beamerstrip3.png}}
+
+	
+	\huge
+	\vspace{1em}
+	
+	Prevalence and the variance of state occupancy time\\
+	\vspace{1em}
+	\large 
+	Tim Riffe and Iv\'{a}n Williams 
+\end{frame}
+%-------------------
+\begin{frame}[plain]
+\Huge
+\begin{center}
+Health inequality \\ \vspace{2em}
+\pause
+Variance
+\end{center}
+\end{frame}
+%-------------------
+\begin{frame}[plain]
+\Huge
+\begin{center}
+Question: \pause In a Sullivan setting, can we know the variance of state occupancy time?
+\end{center}
+\end{frame}
+%-------------------
+% include example of Sullivan inputs:
+% l_x and pi_x
+%-------------------
+\begin{frame}[plain]
+\Huge
+\begin{center}
+Answer: \pause No, sorry. \pause \\ But wait!
+\end{center}
+\end{frame}
+%-------------------
+
+% this could be replaced with series of figures?
+% trajectories figure, 2 or 3 steps
+% traj -> dist -> var?
+\begin{frame}[plain]
+\Huge
+\begin{center}
+Preliminary observations \\
+\Large \pause
+\begin{itemize}[<+->]
+\item life trajectories come first
+\item trajectories observed or generated
+\item assumptions required to generate
+\item we have some assumptions
+\end{itemize}
+\end{center}
+\end{frame}
+
+%-------------------
+
+% show four Bernouli rewards steps from Zarulli & Caswell
+
+% add step for extracting state distribution
+
+% ------------------
+
+% do same thing for fixed rewards
+% 3 steps: 1) bars for fraction of year, 2) jittered. 3) grayscale
+
+% ------------------
+
+\begin{frame}[plain]
+\Huge
+\begin{center}
+Many ways to combine survivorship and prevalence\ldots 
+\end{center}
+\end{frame}
+
+% ------------------
+% random 1,2,3 (pure, tending up, tending down)
+% ------------------
+
+% ------------------
+% bounds prevalence bottom and top
+% ------------------
+
+\begin{frame}[plain]
+\Huge
+Anscombe's quartet
+% add picture (w trex?)
+\end{frame}
+
+% ------------------
+% and what is reasonable?
+% ------------------
+% heuristics: TTD prevalence (Klijs), HLETTD lt TTDprev combos
+% a more realistic way to fill in lx with prev?
+
+%-------------------
+\begin{frame}[plain]
+\Large
+\begin{block}{Data \& Methods}
+\begin{itemize}[<+->]
+\item 
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%	End of the document			%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+
+
+
+
+
+
