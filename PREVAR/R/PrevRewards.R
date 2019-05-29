@@ -487,10 +487,10 @@ VarFixed <- function(qx,prev,interval,calcs = "orig",closeout=FALSE){
 	.var        <- rho2 - rho1^2
 	.var[1] 
 }
-
-rho1 <- colSums( N * colSums(P * R1)[-s1])
-rho2 <- colSums(N *
-				(
-					colSums(P * R2)[-s1] +
-					colSums(2 *(P*R1)[-s1,-s1] * c(rho1))
-					))
+#
+#rho1 <- colSums( N * colSums(P * R1)[-s1])
+#rho2 <- colSums(N *
+#				(
+#					colSums(P * R2)[-s1] +
+#					colSums(2 *(P*R1)[-s1,-s1] * c(rho1))
+#					))

@@ -6,7 +6,7 @@
 makeLTblock <- function(lx, prev, radix, interval){
 	n       <- length(lx)
 	stopifnot(length(prev) == n)
-	lx      <- lx / lx[1] * radix
+	lx      <- round(lx / lx[1] * radix)
 	Nsick   <- round(lx * prev)
 	LTBlock <- matrix(0, ncol = length(lx), nrow = radix)
 	for (i in 1:n){
@@ -67,7 +67,7 @@ e0block <- function(LTblock){
 	mean(Di)
 }
 varblock <- function(LTblock){
-	Di      <- rowSums(LTblock)
+	Di      <- rowSums(LTblock,na.rm=TRUE)
 	DLE     <- mean(Di) # same every time!
 	mean((Di - DLE)^2)
 }
@@ -83,15 +83,21 @@ plot_traj <- function(traj,y,interval = 5,...){
 	w    <- trle$lengths[!drop] * interval
 	rect(left,y,left+w,y+1,border = NA, ...)
 }
-
-plot_LTblock <- function(LTblock, a, lx, interval = 1, radix = nrow(LTblock), add = TRUE){
+lx_block_line <- function(lx,a,radix=100,...){
+	n   <- length(a)
+	lx  <- round(lx / lx[1] * radix)
+	a2  <- c(a[1],rep(a[-1],each=2),a[n])
+	lx2 <- c(rep(lx,each=2))
+	lines(a2,lx2,...)
+}
+plot_LTblock <- function(LTblock, a, lx, interval = 1, radix = nrow(LTblock), add = TRUE,...){
 	lx <- round(lx / lx[1] * radix)
 	if (!add){
 		plot(a, lx, type = 's', las = 1)
 	}
 	
 	for (i in 1:nrow(LTblock)){
-		plot_traj(LTblock[i,],y=i-1,interval = interval,col=gray(.4))
+		plot_traj(LTblock[i,],y=i-1,interval = interval,...)
 	}
 }
 
