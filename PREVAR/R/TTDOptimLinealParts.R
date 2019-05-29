@@ -7,7 +7,8 @@ plot(diff(diff(Pi_Obs)))
 break_age = which(diff(diff(Pi_Obs))==max(diff(diff(Pi_Obs))))+2
 break_age = round(break_age/5)*5
 break_ages = c(0, 30, 60, 85, 100)
-
+lower <- seq(10,90,by=10)
+upper <- lower+20
 # obj func
 fun_opt_both = function(pars, 
                         x , lx, S,
@@ -19,10 +20,11 @@ fun_opt_both = function(pars,
   lives_lx <- round(lives_lx * (1/delta))*delta
   lives_lx[lives_lx>omega] <- omega
   # pars = param_0
-  alphas = pmin(my_poly(pars[1:2], lives_lx[lives_lx >= min(xobj) & lives_lx <= max(xobj)]), 2)
-  lambdas = pmin(my_poly(pars[3:4], lives_lx[lives_lx >= min(xobj) & lives_lx <= max(xobj)]), 7)
-  Ss = rep(S, length.out = length(lives_lx[lives_lx >= min(xobj) & lives_lx <= max(xobj)]))
-  Prev_hat = prev_x_final(lives_lx[lives_lx >= min(xobj) & lives_lx <= max(xobj)], x, lambdas, alphas, Ss, delta, omega, xout)
+	# TR: subsetting not necessary until end...
+  alphas = pmin(my_poly(pars[1:2], lives_lx), 2)
+  lambdas = pmin(my_poly(pars[3:4], lives_lx), 7)
+  Ss = rep(S, length.out = length(lives_lx))
+  Prev_hat = prev_x_final(lives_lx, x, lambdas, alphas, Ss, delta, omega, xout)
   sum((Pi_obs[xobj+1] - Prev_hat[xobj+1]) ^2, na.rm = T)
 }
 
@@ -34,10 +36,11 @@ xout = 0:100
 
 Optims_ranges = data.frame(agei=NA, agef=NA, alpha1=NA, alpha2=NA, lambda1=NA, lambda2=NA, objfun = NA)
 set.seed(45)
-for (i in 1:(length(break_ages)-1)){
+for (i in 1:length(lower)){
   # i = 3
   param_0 =  param_Lbounds + (param_Ubounds-param_Lbounds) * rep(runif(1),4)
-  xobj = break_ages[i]:break_ages[i+1]
+  #xobj = break_ages[i]:break_ages[i+1]
+  xobj = lower[i]:upper[i]
   optim_i = solnp(pars = param_0,    # starting pars
                   fun = fun_opt_both,     # minimize this
                   LB = param_Lbounds, 
@@ -52,7 +55,7 @@ for (i in 1:(length(break_ages)-1)){
                   Pi_obs = Pi_Obs,
                   control = list(delta = .01, rho = 1.5, outer.iter = 50))
   Optims_ranges = rbind(Optims_ranges,
-                         data.frame(agei=break_ages[i], agef=break_ages[i+1], 
+                         data.frame(agei=lower[i], agef=upper[i], 
                                     alpha1=optim_i$pars[1], alpha2=optim_i$pars[2], 
                                     lambda1=optim_i$pars[3], lambda2=optim_i$pars[4], 
                                     objfun = optim_i$values[1]))
@@ -60,6 +63,25 @@ for (i in 1:(length(break_ages)-1)){
 
 
 # Fit
+# get overlapping estimates:
+# wait a sec, just noticing this uses my_poly... is that right?
+# now predicting.
+Optims_ranges = Optims_ranges[!is.na(Optims_ranges$agei),]
+prevs <- matrix(nrow=length(xout),ncol=length(lower))
+for (i in 1:length(lower)){
+	alphas_optim = pmin(my_poly(Optims_ranges[i, 3:4], lives_lx), 2)
+	lambdas_optim = pmin(my_poly(Optims_ranges[i, 5:6], lives_lx), 2)
+	Ss = rep(S, length.out = length(lives_lx))
+	Prev_hat = prev_x_final(lives_lx, x, lambdas_optim, alphas_optim, Ss, delta, omega, xout)
+	ind <- (lower[i]+1):(upper[i]+1)
+	prevs[ind,i] <- Prev_hat[ind]
+}
+
+matplot(xout,prevs,type='l',
+		main = "my guess is there is a typo in the code:\nfitting to different windows shouldn't produce a continuous line")
+lines(xout, Pi_Obs)
+
+
 
 Optims_ranges = Optims_ranges[!is.na(Optims_ranges$agei),]
 Prev_hat = matrix(0, ncol=length(xout), nrow=nrow(Optims_ranges))
