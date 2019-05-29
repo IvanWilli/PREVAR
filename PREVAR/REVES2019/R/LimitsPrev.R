@@ -92,17 +92,27 @@ lines(sort(rowSums(LTblock2,na.rm=TRUE)))
 # TRUE min should move from omega down, with a target
 # almost like a gale-shapely problem?
 
-LTblock_min <- function(){
+LTblock_min <- function(lx, prev, radix = 100, interval = 1){
 	lx    <- round(lx / lx[1] * radix)
 	Nsick <- round(lx*prev)
 	n     <- length(lx)
 	Pmat  <- matrix(0,nrow=radix,ncol=n)
 	
 	for (i in 1:n){
-#		ind <- radix-lx[i] 
-#		Pmat[1:ind,i] <- NA
-#		if (Nsick[i] > 0){
-#			Pmat[(ind+1):(ind+Nsick[i]),i] <- interval
-#		}
+		ind <- radix-lx[i] 
+		Pmat[1:ind,i] <- NA
+		if (Nsick[i] > 0){
+			Pmat[(ind+1):(ind+Nsick[i]),i] <- interval
+		}
 	}
+	
+	
+	Di     <- rowSums(Pmat, na.rm = TRUE)
+	resids <- Di - mean(Di)
+	# largest positives take from
+	# largest negatives move to
+	# treat as probability distribution for from-to.
+	# select *from* highest burden?
+	
+	
 }
