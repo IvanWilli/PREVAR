@@ -92,6 +92,7 @@ lines(sort(rowSums(LTblock2,na.rm=TRUE)))
 # TRUE min should move from omega down, with a target
 # almost like a gale-shapely problem?
 
+# radix=200;interval=1;prev <- prev_line(lx,0,.5)
 LTblock_min <- function(lx, prev, radix = 100, interval = 1){
 	lx    <- round(lx / lx[1] * radix)
 	Nsick <- round(lx*prev)
@@ -106,13 +107,38 @@ LTblock_min <- function(lx, prev, radix = 100, interval = 1){
 		}
 	}
 	
-	
-	Di     <- rowSums(Pmat, na.rm = TRUE)
-	resids <- Di - mean(Di)
-	# largest positives take from
-	# largest negatives move to
-	# treat as probability distribution for from-to.
-	# select *from* highest burden?
-	
+	# now for the shuffle, code not optimal
+	var_i           <- varblock(Pmat)
+	for (i in 1:(sum(Nsick)/2)){
+		var_old         <- var_i
+		Di              <- rowSums(Pmat, na.rm = TRUE)
+		resids          <- Di - mean(Di)
+		posi            <- resids > 0
+		negi            <- resids < 0
+		prob_from       <- resids
+		prob_to         <- resids
+		prob_from[negi] <- 0
+		
+		# only go down
+		prob_to[posi]   <- 0
+		prob_to[1:from_i]  <- 0
+		prob_to         <- abs(prob_to)
+		
+		# picks out cells on bottom, when dropping from top that are 
+		# also in the leftmost position
+		pd              <- diff(rbind(Pmat,interval))
+		# -interval happens when dropping top down
+		from_cells      <- pd == -interval 
+		from_i          <- which.max(prob_from)
+		from_col        <- which(diff(c(0,from_cells[from_i,])) == interval)
+		Pmat[from_i,]
+		prob_to[Pmat[,from_col] == interval & !is.na(Pmat[,from_col])] <- 0
+		Pmat[from_i,from_col] <- 0
+		Pmat[which.max(prob_to),from_col] <- interval
+		var_i           <- varblock(Pmat)
+		if (!(var_i <= var_old)){
+			break
+		}
+	}
 	
 }
