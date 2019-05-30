@@ -7,17 +7,6 @@ source("R/PrevRewards.R")
 source("R/BlockFunctions.R")
 # ---------------------
 # absurd cases:
-LTblock_bottom <- function(lx, prev, radix = 1e5, interval = 1){
-	lx    <- round(lx / lx[1] * radix)
-	
-	Nsick <- round(lx*prev)
-	n     <- length(lx)
-	Pmat  <- matrix(0,nrow=radix,ncol=n)
-	for (i in 1:n){
-		Pmat[(radix-Nsick[i]):radix,i] <- interval
-	}
-	Pmat
-}
 
 lx        <- qx2lx(qx)
 # now group / graduate this one
@@ -38,21 +27,6 @@ dev.off()
 
 ###############################################
 # Top prev:
-LTblock_top <- function(lx, prev, radix = 1e5, interval = 1){
-	lx    <- round(lx / lx[1] * radix)
-	Nsick <- round(lx*prev)
-	n     <- length(lx)
-	Pmat  <- matrix(0,nrow=radix,ncol=n)
-	
-	for (i in 1:n){
-		ind <- radix-lx[i] 
-		Pmat[1:ind,i] <- NA
-		if (Nsick[i] > 0){
-			Pmat[(ind+1):(ind+Nsick[i]),i] <- interval
-		}
-	}
-	Pmat
-}
 
 LTblock2 <- LTblock_top(lx_5,prev_5,radix=100,interval=5)
 
@@ -66,83 +40,7 @@ dev.off()
 
 ###############################################
 # min var
-LTblock_min <- function(lx, prev, radix = 100, interval = 1){
-	lx    <- round(lx / lx[1] * radix)
-	Nsick <- round(lx*prev)
-	n     <- length(lx)
-	Pmat  <- matrix(0,nrow=radix,ncol=n)
-	
-	for (i in 1:n){
-		ind <- radix-lx[i] 
-		Pmat[1:ind,i] <- NA
-		if (Nsick[i] > 0){
-			Pmat[(ind+1):(ind+Nsick[i]),i] <- interval
-		}
-	}
-	
-	# now for the shuffle, code not optimal
-	#var_i           <- varblock(Pmat)
-	NN              <- max(150,sum(!is.na(Pmat) & Pmat == interval)/2)
-	var_i           <- rep(NA,NN)
-	var_i[1]        <-  varblock(Pmat)
-	for (i in 1:NN){
-		Di              <- rowSums(Pmat, na.rm = TRUE)
-		resids          <- Di - mean(Di)
-		posi            <- resids > 0
-		negi            <- resids < 0
-		prob_from       <- resids
-		prob_to         <- resids
-		prob_from[negi] <- 0
-		
-		# only go down
-		prob_to[posi]   <- 0
-		#prob_to[1:from_i]  <- 0
-		prob_to         <- abs(prob_to)
-		
-		# picks out cells on bottom, when dropping from top that are 
-		# also in the leftmost position
-		#pd              <- diff(rbind(Pmat, interval))
-		# eligible, 1
-		#on_bottom <- pd == -1
-		# eligible 2 (on left)
-		#on_left   <- t(diff(rbind(0,t(Pmat)))) == 1
-		# eligible cells
-		#from_cells <- on_bottom & on_left & (prob_from > 0)
-		from_cells <- Pmat == interval & (prob_from > 0)
-		#row_from  <- which.max(rowSums(from_cells,na.rm=TRUE) * prob_from)
-	    probs      <- rowSums(from_cells, na.rm = TRUE) * prob_from
-		if (all(probs == 0)){
-			break
-		}
-		row_from   <- sample(1:radix, size = 1, prob = probs)
-		
-		# which has the most zero spots in the to-range?
-	    
-		col_prob  <- colSums(Pmat == 0 * prob_to, na.rm=TRUE) * (from_cells[row_from, ] & !is.na(from_cells[row_from, ]))
-		if (all(col_prob==0)){
-			break
-		}
-		col_in    <- sample(1:n,size=1,prob=col_prob)
-		# to cells are zeros in the to-range
-		#row_to   <- which.max(Pmat[,col_in] == 0 & (prob_to > 0) * prob_to)
-	    to_probs <- rowSums(Pmat[,col_in,drop=FALSE] == 0,na.rm=TRUE) * prob_to
-		if (all(to_probs==0)){
-			break
-		}
-		row_to   <- sample(1:radix, size = 1, prob = to_probs)
-		# make the change
-		Pmat[row_from, col_in] <- 0
-		Pmat[row_to, col_in]   <- interval
-		var_i[i+1]           <- varblock(Pmat)
-		if (i > 100){
-			if ((var_i[i+1] - var_i[i-50]) == 0){
-				break
-			}
-		}
-	}
-	cat("\n",i)
-	Pmat
-}
+
 lx         <- qx2lx(qx)
 lx_05      <- exp(granularize(log(lx),interval=5,method = "monoH.FC"))
 qx_05      <- lx2qx(lx_05)
@@ -173,7 +71,7 @@ LTblock1   <- LTblock_bottom(lx_05,prev_05,radix=1e5,interval=.05)
 var_max    <- varblock(LTblock1)
 rm(LTblock1);gc()
 
-# WHY higher than random?
+# higher than random
 LTblock2   <- LTblock_top(lx_05,prev_05,radix=1e5,interval=.05)
 var_top    <- varblock(LTblock2)
 rm(LTblock2);gc()
@@ -184,8 +82,8 @@ prev_05    <- prev_line(lx_05,0,.5)
 # lx <-lx_05;prev <- prev_05
 a5         <- seq(0,110,by=.5)
 
-LTblock3   <- LTblock_min(lx=lx_05,prev=prev_05,radix=1e4,interval=.5)
-hist(rowSums(LTblock3))
+LTblock3   <- LTblock_min(lx=lx_05,prev=prev_05,radix=1e3,interval=.5)
+hist(rowSums(LTblock3,na.rm=TRUE))
 var_min    <- varblock(LTblock3)
 rm(LTblock3);gc()
 saveRDS(c(top=var_top,max=var_max,min=var_min),file="Data/blockminmax.rds")
