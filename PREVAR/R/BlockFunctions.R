@@ -83,9 +83,12 @@ plot_traj <- function(traj,y,interval = 5,...){
 	w    <- trle$lengths[!drop] * interval
 	rect(left,y,left+w,y+1,border = NA, ...)
 }
-lx_block_line <- function(lx,a,radix=100,...){
+lx_block_line <- function(lx,a,radix=100,round=TRUE,...){
 	n   <- length(a)
-	lx  <- round(lx / lx[1] * radix)
+	lx <- lx / lx[1] * radix
+	if (round){
+		lx  <- round(lx / lx[1] * radix)
+	}
 	a2  <- c(a[1],rep(a[-1],each=2),a[n])
 	lx2 <- c(rep(lx,each=2))
 	lines(a2,lx2,...)

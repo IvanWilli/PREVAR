@@ -68,6 +68,7 @@ if (do.this){
 #dput(round(mean(vari),2))
 23.35
 
+sum(prev_05 * lx_05)*.05
 
 
 

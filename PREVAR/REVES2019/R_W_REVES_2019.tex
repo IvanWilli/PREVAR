@@ -44,14 +44,12 @@
 	\large 
 	Tim Riffe and Iv\'{a}n Williams 
 \end{frame}
-%-------------------
+% %-------------------
 \begin{frame}[plain]
-\Huge
-\begin{center}
-Health inequality \\ \vspace{2em}
-\pause
-Variance
-\end{center}
+ \Huge
+ \begin{center}
+   \includegraphics[height=\textheight]{Figs/Inputs.pdf}
+ \end{center}
 \end{frame}
 %-------------------
 \begin{frame}[plain]
@@ -81,10 +79,10 @@ Answer: \pause No, sorry. \pause \\ But wait!
 Preliminary observations \\
 \Large \pause
 \begin{itemize}[<+->]
-\item life trajectories come first
-\item trajectories observed or generated
-\item assumptions required to generate
-\item we have some assumptions
+\item life \textcolor{blue}{trajectories} come first
+\item observed or \textcolor{blue}{generated}
+\item \textcolor{blue}{assumptions} required
+\item let's explore some
 \end{itemize}
 \end{center}
 \end{frame}
@@ -97,13 +95,15 @@ Preliminary observations \\
 
 % add step for extracting state distribution
 \begin{frame}
+\begin{center}
 \begin{overlayarea}{\textwidth}{\textheight}
     \only<1>{\includegraphics[height=\textheight]{Figs/BernTraj.pdf}}
     \only<2>{\includegraphics[height=\textheight]{Figs/BernTrajProbs.pdf}}
     \only<3>{\includegraphics[height=\textheight]{Figs/BernCondTrajProbs.pdf}}
     \only<4>{\includegraphics[height=\textheight]{Figs/BernTrajProbsWeighted.pdf}}
-
+    \only<5>{\includegraphics[height=.9\textheight]{Figs/BernDiDist.pdf}}
 \end{overlayarea}
+\end{center}
 \end{frame}
 % ------------------
 
@@ -124,13 +124,15 @@ Many ways to combine survivorship and prevalence\ldots
 % ------------------
 \begin{frame}
 \begin{overlayarea}{\textwidth}{\textheight}
-    \only<1>{\includegraphics[height=\textheight]{Figs/Bottom1.pdf}}
-    \only<2>{\includegraphics[height=\textheight]{Figs/Top1.pdf}}
-    \only<3>{\includegraphics[height=\textheight]{Figs/HCAL.jpg}}
-    \only<4>{\includegraphics[height=\textheight]{Figs/Min1.pdf}}
-    \only<5>{\includegraphics[height=\textheight]{Figs/Random1.pdf}}
-    \only<6>{\includegraphics[height=\textheight]{Figs/Random2.pdf}}
-    \only<7>{\includegraphics[height=\textheight]{Figs/Random3.pdf}}
+    \only<1>{\includegraphics[height=\textheight]{Figs/InputsBlocky.pdf}}
+    \only<2>{\includegraphics[height=\textheight]{Figs/Bottom1.pdf}}
+    \only<3>{\includegraphics[height=\textheight]{Figs/Top1.pdf}}
+    \only<4>{\includegraphics[height=\textheight]{Figs/HCAL.jpg}}
+    \only<5>{\includegraphics[height=\textheight]{Figs/Min1.pdf}}
+    \only<6>{\includegraphics[height=\textheight]{Figs/Random1.pdf}}
+    \only<7>{\includegraphics[height=\textheight]{Figs/Random2.pdf}}
+    \only<8>{\includegraphics[height=\textheight]{Figs/Random3.pdf}}
+    \only<9>{\includegraphics[height=\textheight]{Figs/FixedDecimal.pdf}}
 \end{overlayarea}
 \end{frame}
 % ------------------
@@ -139,16 +141,29 @@ Many ways to combine survivorship and prevalence\ldots
 
 \begin{frame}[plain]
 \Huge
+\begin{center}
 Anscomb\emph{osaurus}~~\small (HT Alberto Cairo)
 % add picture (w trex?)
 \includegraphics[width=\textwidth]{Figs/AllDinosGrey.png}
+\end{center}
 \end{frame}
 
 % ------------------
 
 \begin{frame}[plain]
 \Huge
-Variance scenarios- huge spread!
+\begin{center}
+\emph{Sullivans Sextet} 
+% add picture (w trex?)
+\includegraphics[height=.9\textheight]{Figs/SullivanSextet.pdf}
+\end{center}
+\end{frame}
+
+% ------------------
+
+\begin{frame}[plain]
+\Huge
+Prevalence scenarios
 % add picture (w trex?)
 \includegraphics[height=.8\textheight]{Figs/Comparison.pdf}
 \end{frame}
@@ -158,21 +173,31 @@ Variance scenarios- huge spread!
 % ------------------
 % heuristics: TTD prevalence (Klijs), HLETTD lt TTDprev combos
 % a more realistic way to fill in lx with prev?
-
-%-------------------
 \begin{frame}[plain]
-\Large
-\begin{block}{Data \& Methods}
-\begin{itemize}[<+->]
-\item 
-\end{itemize}
-\end{block}
+\small
+\begin{center}
+\includegraphics[height=.8\textheight]{Figs/12889_2011_Article_3213_Fig1_HTML.jpg}
+\end{center}
+
+Klijs, Machenback, and Kunst (2011)
 \end{frame}
 
+\begin{frame}[plain]
+\small
+\begin{center}
+\includegraphics[height=.9\textheight]{Figs/schematic3.pdf}
+\end{center}
+Riffe, van Raalte, Bijlsma (2017)\\~
+\end{frame}
 
-
-
-
+\begin{frame}[plain]
+\huge
+\begin{center}
+Thanks to:\\
+Doug Wolf, Jennifer Karaz Montez, Hal Caswell, Virginia Zarulli,
+Alyson van Raalte
+\end{center}
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%	End of the document			%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

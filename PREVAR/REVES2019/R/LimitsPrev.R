@@ -53,7 +53,7 @@ LTblock3   <- LTblock_min(lx_05, prev_05,radix=100,interval=5)
 pdf("REVES2019/Figs/Min1.pdf")
 par(xaxs="i",yaxs="i")
 plot(a5, round(lx_05 / lx_05[1] * 100), type = 's', las = 1,
-		xlab="Age",ylab="500 lives",cex.lab=1.5,cex.axis=1.5,lwd=2,ylim=c(0,101))
+		xlab="Age",ylab="100 lives",cex.lab=1.5,cex.axis=1.5,lwd=2,ylim=c(0,101))
 plot_LTblock(LTblock3[100:1,],lx=lx_05,a=a5,interval=5,add=TRUE,col="black")
 lx_block_line(lx_05,a5,radix=100,lwd=3)
 dev.off()
