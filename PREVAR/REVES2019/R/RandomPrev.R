@@ -63,8 +63,10 @@ if (do.this){
 	}
 	saveRDS(vari,file="Data/vari1000_1e5_05.rds")
 }
-hist(vari)
 
+#vari <- readRDS("Data/vari1000_1e5_05.rds")
+#dput(round(mean(vari),2))
+23.35
 
 
 

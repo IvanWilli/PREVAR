@@ -447,7 +447,7 @@ VarFixed <- function(qx,prev,interval,calcs = "orig",closeout=FALSE){
 #	R2[row(R2) - 1 == col(R2)]      <- m2
 #	R2[s1, s1]                      <- 0
 	if (closeout){
-		R[s1, ] <- R[s1, ] / 2
+		R1[s1, ] <- R1[s1, ] / 2
 	}
 	
 	if (calcs == "faster"){
