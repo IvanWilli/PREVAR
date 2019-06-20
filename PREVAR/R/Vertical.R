@@ -42,14 +42,18 @@ omega <- 110
 delta <- .5
 x = seq(0, omega, delta)
 library(splines)
-spline_lx <- interpSpline(0:omega, lx)
+
+
+
+
+spline_lx <- interpSpline(0:omega, lx/lx[1])
 lx_x <- predict(spline_lx, x)$y
 plot(x, lx_x, t='s',ylab='lx',xlab='x')
 Pi_Obs = function(x) .8/(1+exp(-.1*(x-70)))
 lines(x, Pi_Obs(x), col = 2)
 lines(x, S_fun(x, ages=c(0, omega)), col=3)
 legend(5,.7,c('lx', 'prev', 'S (portion of lx)'), col=1:3, lty=1, bty = 'n')
-
+lines(x,lx_x - lx_x * S_fun(x,ages=c(0, omega)))
 ####### get lambda for each delta x (vertical bar)
 lambdas = c()
 for(i in 1:length(x)){
@@ -79,6 +83,15 @@ Prev_mat = rev(t(Prev_mat))
 heatmap(Prev_mat, Rowv = NA, Colv = NA)
 
 
+
+lx_inv <- function(lx, x, probs, deltax = 0){
+	lx <- lx / lx[1]
+	lxq <- splinefun(x ~ lx, method = "monoH.FC")(probs)
+	if (delta > 0){
+		lxq <- lxq - lxq %% deltax
+	}
+	lxq
+}
 
 
 
