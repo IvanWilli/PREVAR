@@ -93,7 +93,7 @@ lx_inv <- function(lx, x, probs, deltax = 0){
 	lxq
 }
 
-
+lx_inv(lx,0:110,seq(1,0,by=-.001),deltax=.05)
 
 
 
