@@ -1,15 +1,19 @@
-lives_lx = c(0.8, 1.6, 2.1, 2.9, 4.7, 6.3, 6.56, 7.6, 8.7, 10)
+# ok
+lives_lx = c(0.8, 1.6, 2.9, 3.8, 4.7, 6.3, 6.56, 7.6, 8.7, 10)
+# no ok
+# lives_lx = c(0.8, 1.6, 2.1, 3.8, 4.7, 6.3, 6.56, 7.6, 8.7, 10)
 x = 0:10
+# q = seq(1, 0, -.1)
 # lives_lx <- life_bins(lx, 0:110, probs = q )[-1]
-# lives_lx[100] = 100
-# x = 50:100
+# lives_lx[lives_lx>=100] = 100
 # lives_lx = lives_lx[lives_lx>50]
-# S = pmin(10,lives_lx)
+# x = 50:100
+S = pmin(5,lives_lx-min(x))
 
-# Pi_Obs = round(.6/(1+exp(-.1*(x[-length(x)]-5))),2) # bad fit
-Pi_Obs = .01*exp((x[-length(x)]+.05)*.4)
+Pi_Obs = .03*exp((x[-length(x)]+.5)*.3)
+# Pi_Obs = .03*exp((x[-length(x)]+.05)*.03)
 plot(x[-length(x)], Pi_Obs, t='o')
-barplot(rev(lives_lx), horiz = T, col = 0, space = 0, xlim = range(x), names.arg = rev(lives_lx))
+barplot(rev(lives_lx)-min(x), horiz = T, col = 0, space = 0, xlim = range(x)-min(x), names.arg = rev(lives_lx))
 abline(v=1:max(x), lty=2)
 mtext(text = round(Pi_Obs,2), side = 1, line = 2, at = seq(.6, max(x)-.4, 1), col = 2)
 mtext('Prev', side = 1, line = 2, at = -.5, col = 2, cex=.8)
