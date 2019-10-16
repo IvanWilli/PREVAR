@@ -2,11 +2,11 @@
 # Author: tim
 ###############################################################################
 # jump to 10 year probabilities
-setwd("/home/tim/git/PREVAR/PREVAR")
+library(here)
 
-source("R/Data.R")
-source("R/utils.R")
-source("R/PrevRewards.R")
+source(here("PREVAR","R","Data.R"))
+source(here("PREVAR","R","utils.R"))
+source(here("PREVAR","R","PrevRewards.R"))
 
 lx        <- qx2lx(qx)
 
@@ -312,7 +312,7 @@ Tmat <- get_Tmat(n=3,closeout=FALSE)
 Pmat <- Tmat2Pmat(Tmat,prev)
 
 # 1) Binary trajectory space
-pdf("Figures/BernTraj.pdf",height=7.7,width=2.2)
+pdf(here("PREVAR","Figures","BernTraj.pdf"),height=7.7,width=2.2)
 par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim = c(0, 3), ylim = c(0, 14), ann = FALSE, axes = FALSE, asp = 1)
 plotTmat(Tmat)
@@ -321,7 +321,7 @@ axis(1,at=c(0,1,2,3))
 text(0,.5:13.5,14:1,pos=2,xpd=TRUE)
 dev.off()
 # 2) with Bernoulli probabilities
-pdf("Figures/BernTrajProbs.pdf",height=7.7,width=2.2)
+pdf(here("PREVAR","Figures","BernTrajProbs.pdf"),height=7.7,width=2.2)
 par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim = c(0,3),ylim = c(0,14),ann=FALSE, axes = FALSE,asp=1)
 plotPmat(Pmat,Tmat)
@@ -331,7 +331,7 @@ text(0,.5:13.5,14:1,pos=2,xpd=TRUE)
 dev.off()
 # 3) with height weighted to probability of trajectory
 # ocurring conditional on trajectory length (length of life)
-pdf("Figures/BernCondTrajProbs.pdf",height=5.7,width=5.7)
+pdf(here("PREVAR","Figures","BernCondTrajProbs.pdf"),height=5.7,width=5.7)
 par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim =
 				c(0,3), ylim = c(0,3), ann = FALSE, axes = FALSE)
@@ -340,7 +340,7 @@ axis(1,at=c(0,1,2,3),cex.axis=1.5)
 axis(2,at=c(0,1,2,3),las=1,cex.axis=1.5)
 dev.off()
 # 4) Bernoulli also Markov weighted
-pdf("Figures/BernTrajProbsWeighted.pdf",height=5.7,width=5.7)
+pdf(here("PREVAR","Figures","BernTrajProbsWeighted.pdf"),height=5.7,width=5.7)
 par(mai=c(.5,.5,.2,.2))
 plot(NULL, type = "n", xlim =
 				c(0,3), ylim = c(0,1), ann = FALSE, axes = FALSE)
@@ -358,7 +358,7 @@ ptraj     <- prevprod * dx_weight
 Di        <- rowSums(Tmat, na.rm = TRUE)
 
 # probability distribution of total time spent
-pdf("Figures/BernDiDist.pdf", height = 5.7, width = 5.7)
+pdf(here("PREVAR","Figures","BernDiDist.pdf"), height = 5.7, width = 5.7)
 par(mai=c(.5,.7,.2,0))
 barplot(tapply(ptraj, Di, sum),space=0,las=1,cex.axis=1.5,cex=1.5)
 dev.off()
@@ -385,7 +385,7 @@ which(Di == 0)
 
 ts <- .05
 
-pdf("Figures/DiDist.pdf")
+pdf(here("PREVAR","Figures/DiDist.pdf"))
 par(mai=c(.5,.7,.2,0))
 plot(NULL, xlim=c(0,4),ylim=c(0,.5),ann=FALSE,axes=FALSE)
 for (i in 1:4){
@@ -421,7 +421,7 @@ wmean(P,dx)
 wvar(P,dx)
 lx <- c(1,.8,.3)
 
-pdf("Figures/fixedflat.pdf", width=4,height=4)
+pdf(here("PREVAR","Figures","fixedflat.pdf"), width=4,height=4)
 par(mai=c(.5,.5,.1,.1))
 plot(NULL, type="n",xlim=c(0,3),ann=FALSE,axes=FALSE,ylim=c(0,1))
 rect(0:2,0,1:3,lx,col=gray(1-prev))
@@ -429,7 +429,7 @@ axis(1,at=c(0,1,2,3),cex.axis=1.5)
 axis(2,at=c(0,1),las=1,cex.axis=1.5)
 dev.off()
 
-pdf("Figures/fixedbars.pdf", width=4,height=4)
+pdf(here("PREVAR","Figures","fixedbars.pdf"), width=4,height=4)
 par(mai=c(.5,.5,.1,.1))
 plot(NULL, type="n",xlim=c(0,3),ann=FALSE,axes=FALSE,ylim=c(0,1))
 rect(0:2,0,1:3,lx)

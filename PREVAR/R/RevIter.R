@@ -22,6 +22,8 @@ prev_sv_simetric = function(x, y, S, lambda=3){ # x vector of ages at death
 	}
 	p
 }
+  
+
 plot(0,0, col=0, ylim = c(0,1), xlim=c(0,10), xlab='x', ylab='prev', asp=T)
 for (lambdas in seq(-10, 10, .5)){
 	lines(seq(0, 10, .05), prev_sv_simetric(seq(0, 10, .05), y = 10, S = 5, lambdas), 
