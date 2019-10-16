@@ -1,42 +1,282 @@
+%% BioMed_Central_Tex_Template_v1.06
+%%                                      %
+%  bmc_article.tex            ver: 1.06 %
+%                                       %
 
-\documentclass[a4paper]{article}
+%%IMPORTANT: do not delete the first line of this template
+%%It must be present to enable the BMC Submission system to
+%%recognise this template!!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                     %%
+%%  LaTeX template for BioMed Central  %%
+%%     journal article submissions     %%
+%%                                     %%
+%%          <8 June 2012>              %%
+%%                                     %%
+%%                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% For instructions on how to fill out this Tex template           %%
+%% document please refer to Readme.html and the instructions for   %%
+%% authors page on the biomed central website                      %%
+%% http://www.biomedcentral.com/info/authors/                      %%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%% BioMed Central currently use the MikTex distribution of         %%
+%% TeX for Windows) of TeX and LaTeX.  This is available from      %%
+%% http://www.miktex.org                                           %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% additional documentclass options:
+%  [doublespacing]
+%  [linenumbers]   - put the line numbers on margins
+
+%%% loading packages, author definitions
+
+%\documentclass[twocolumn]{bmcart}% uncomment this for twocolumn layout and comment line below
+\documentclass{bmcart}
 
 %%% Load packages
-\usepackage{amsthm,amsmath}
-\RequirePackage{natbib}
-\usepackage{natbib}
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage{placeins}
-\usepackage{natbib}% uncomment this for author-year bibliography
+%\usepackage{amsthm,amsmath}
+%\RequirePackage{natbib}
+%\RequirePackage[authoryear]{natbib}% uncomment this for author-year bibliography
 %\RequirePackage{hyperref}
 \usepackage[utf8]{inputenc} %unicode support
+\usepackage{apacite}
+\usepackage{appendix}
+\usepackage{amsmath}
+\usepackage{amsthm}
+% for ASY interactive 3d figure
+%\usepackage[inline]{asymptote}
+\usepackage{amssymb} % for approx greater than
+%\usepackage{caption}
+\usepackage{placeins} % for \FloatBarrier
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{longtable}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor,colortbl}
+\usepackage{chngpage}
+\usepackage{natbib}
+%\bibpunct{(}{)}{,}{a}{}{;} 
+\usepackage{url}
+\usepackage{nth}
+\usepackage{authblk}
+\usepackage[most]{tcolorbox}
+\usepackage[normalem]{ulem}
+\usepackage{amsfonts}
+\usepackage{censor}
+\usepackage{etoolbox}
+\AtBeginEnvironment{quote}{\singlespace\small}
+\AtEndEnvironment{quote}{\endsinglespace}
 %\usepackage[applemac]{inputenc} %applemac support if unicode package fails
 %\usepackage[latin1]{inputenc} %UNIX support if unicode package fails
-\usepackage{authblk}
-\newcommand{\absdiv}[1]{%
-  \par\addvspace{.5\baselineskip}% adjust to suit
-  \noindent\textbf{#1}\quad\ignorespaces
-}
-\newcommand{\rd}[1]{\textcolor{red}{#1}}
-%%----------------------------------------------
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                             %%
+%%  If you wish to display your graphics for   %%
+%%  your own use using includegraphic or       %%
+%%  includegraphics, then comment out the      %%
+%%  following two lines of code.               %%
+%%  NB: These line *must* be included when     %%
+%%  submitting to BMC.                         %%
+%%  All figure files must be submitted as      %%
+%%  separate graphics through the BMC          %%
+%%  submission process, not included in the    %%
+%%  submitted article.                         %%
+%%                                             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Toggle show graphics
+%\def\includegraphic{}
+%\def\includegraphics{}
+
+
+
+%%% Put your definitions there:
+\startlocaldefs
+\endlocaldefs
+
+
+%%% Begin ...
 \begin{document}
 
+%%% Start of article front matter
+\begin{frontmatter}
+
+\begin{fmbox}
+\dochead{Research}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the title of your article here     %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \title{Prevalence and the variance of state occupancy time}
-\author{Tim Riffe\thanks{riffe@demogr.mpg.de}\\Max Planck Institute for Demographic Research}
-\maketitle
 
-\vspace{-2em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors here                   %%
+%%                                          %%
+%% Specify information, if available,       %%
+%% in the form:                             %%
+%%   <key>={<id1>,<id2>}                    %%
+%%   <key>=                                 %%
+%% Comment or delete the keys which are     %%
+%% not used. Repeat \author command as much %%
+%% as required.                             %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{abstract}
-\absdiv{Background} Markov reward methods have been proposed to calculate the variance of state occupancy time based on age-structured prevalence and survivorship.
-\absdiv{Objectives} I aim to clarify the assumptions of this approach, give bounds to its reasonableness, and suggest improvements.
-\absdiv{Methods} I use simplified toy data to demonstrate concepts, and then I use HRS data for different health conditions to derive some empirical guidelines. I calculate results for extreme cases to provide bounds, simulate variance under simple assumptions, and simulate a more natural inter-individual state distribution.
-\absdiv{Results} I show that state occupancy variance for Sullivan-style inputs is not identified, and I show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
-\absdiv{Conclusions} The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancies.
-\absdiv{Keywords} Healthy life expectancy, Sullivan method, Healthy life variance, Lifetable, Health inequality
+\author[
+   addressref={aff1},                   % id's of addresses, e.g. {aff1,aff2}
+   corref={aff1},                       % id of corresponding address, if any
+   noteref={n1},                        % id's of article notes, if any
+   email={riffe@demogr.mpg.de}   % email address
+]{\inits{TR}\fnm{Tim} \snm{Riffe}}
+\author[
+   addressref={aff2, aff3},
+   email={cohen@mail.rockefeller.edu}
+]{\inits{JEC}\fnm{Joel E.} \snm{Cohen}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors' addresses here        %%
+%%                                          %%
+%% Repeat \address commands as much as      %%
+%% required.                                %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\address[id=aff1]{%                           % unique id
+  \orgname{Max-Planck-Institute for Demographic Research} % university, etc
+ % \street{Konrad-Zuse-Str 1},                     %
+ % \postcode{18057}                                % post or zip code
+ % \city{Rostock},                              % city
+ % \cny{DE}                                    % country
+}
+\address[id=aff2]{%
+  \orgname{The Rockefeller University}
+ % \street{D\"{u}sternbrooker Weg 20},
+ % \postcode{24105}
+ % \city{Kiel},
+ % \cny{Germany}
+}
+\address[id=aff3]{%
+  \orgname{Columbia University}
+  %\street{D\"{u}sternbrooker Weg 20},
+  %\postcode{24105}
+  %\city{Kiel},
+  %\cny{Germany}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter short notes here                   %%
+%%                                          %%
+%% Short notes will be after addresses      %%
+%% on first page.                           %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{artnotes}
+%\note{Sample of title note}     % note to the article
+\note[id=n1]{Equal contributor} % note, connected to author
+\end{artnotes}
+
+\end{fmbox}% comment this for two column layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Abstract begins here                 %%
+%%                                          %%
+%% Please refer to the Instructions for     %%
+%% authors on http://www.biomedcentral.com  %%
+%% and include the section headings         %%
+%% accordingly for your article type.       %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstractbox}
+
+\begin{abstract} % abstract
+\parttitle{Background} 
+ Markov reward methods have been proposed to calculate the variance of state occupancy time based on age-structured prevalence and survivorship.
+\parttitle{Objective} 
+We aim to clarify the assumptions of this approach, give bounds to its reasonableness, and suggest improvements.
+\parttitle{Methods} 
+We use simplified toy data to demonstrate concepts, and then I use HRS data for different health conditions to derive some empirical guidelines. I calculate results for extreme cases to provide bounds, simulate variance under simple assumptions, and simulate a more natural inter-individual state distribution.
+\parttitle{Results} 
+We show that state occupancy variance for Sullivan-style inputs is not identified, and I show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
+\parttitle{Conclusions} 
+The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancies.
 \end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The keywords begin here                  %%
+%%                                          %%
+%% Put each keyword in separate \kwd{}.     %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{keyword}
+\kwd{Healthy life expectancy}
+\kwd{Sullivan method}
+\kwd{Healthy life variance}
+\kwd{Health inequality}
+\kwd{Lifetable}
+\end{keyword}
+
+% MSC classifications codes, if any
+%\begin{keyword}[class=AMS]
+%\kwd[Primary ]{}
+%\kwd{}
+%\kwd[; secondary ]{}
+%\end{keyword}
+
+\end{abstractbox}
+%
+%\end{fmbox}% uncomment this for twcolumn layout
+
+\end{frontmatter}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Main Body begins here                %%
+%%                                          %%
+%% Please refer to the instructions for     %%
+%% authors on:                              %%
+%% http://www.biomedcentral.com/info/authors%%
+%% and include the section headings         %%
+%% accordingly for your article type.       %%
+%%                                          %%
+%% See the Results and Discussion section   %%
+%% for details on how to create sub-sections%%
+%%                                          %%
+%% use \cite{...} to cite references        %%
+%%  \cite{koon} and                         %%
+%%  \cite{oreg,khar,zvai,xjon,schn,pond}    %%
+%%  \nocite{smith,marg,hunn,advi,koha,mouse}%%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% start of article main body
+% <put your article body there>
 
 \section*{Introduction}
 Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Transition-based multistate models are flexible with respect to the patterns they can reproduce, but there is no consensus on best practices for state-spaces and which time dimensions ought to structure transitions. Most practitioners produce estimates with the Sullivan method \citep{sullivan1971single} becuse it is often the only viable option, but some Markov skeptics accept the simpler Sullivan method despite its flaws due its process-free interpretation. For the present, let's take the Sullivan estimate of life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs. 
@@ -189,14 +429,19 @@ The purpose of
 %%                                          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{backmatter}
+
+\section*{Funding}
+  \censor{TR} thanks the \censor{Max-Planck-Institute for Demographic Research} for supporting this work with a fair salary. 
+  
 \section*{Competing interests}
   The authors declare that they have no competing interests.
 
 \section*{Author's contributions}
-    TR did everything so far.
+  Both authors conceived of this project, undertook formal analysis, validation, drafting, and reviewing of the manuscript. \censor{TR} did the data analysis, coding, visualization, and reproducibility repository curation.
 
 \section*{Acknowledgements}
-  Thanks to Douglas Wolf and Jennifer Karas Montez for posing a question that led to this work, and to Hal Caswell and Virginia Zarulli for the groundwork on which this is based and for fielding inquiries.
+   Thanks to Douglas Wolf and Jennifer Karas Montez for posing a question that led to this work, and to Hal Caswell and Virginia Zarulli for the groundwork on which this is based and for fielding inquiries.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
 %%                                                         %%
@@ -214,9 +459,83 @@ The purpose of
 
 % if your bibliography is in bibtex format, use those commands:
 \bibliographystyle{spbasic} % Style BST file (bmc-mathphys, vancouver, spbasic).
-\bibliography{references}      % Bibliography file (usually '*.bib' )
+\bibliography{references.bib}      % Bibliography file (usually '*.bib' )
 % for author-year bibliography (bmc-mathphys or spbasic)
+% a) write to bib file (bmc-mathphys only)
+% @settings{label, options="nameyear"}
+% b) uncomment next line
+%\nocite{label}
+
+% or include bibliography directly:
+% \begin{thebibliography}
+% \bibitem{b1}
+% \end{thebibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Figures                       %%
+%%                               %%
+%% NB: this is for captions and  %%
+%% Titles. All graphics must be  %%
+%% submitted separately and NOT  %%
+%% included in the Tex document  %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Do not use \listoffigures as most will included as separate files
+
+%\section*{Figures}
+%  \begin{figure}[h!]
+%  \caption{\csentence{Sample figure title.}
+%      A short description of the figure content
+%      should go here.}
+%      \end{figure}
+
+%\begin{figure}[h!]
+%  \caption{\csentence{Sample figure title.}
+%      Figure legend text.}
+%      \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Tables                        %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Use of \listoftables is discouraged.
+%%
+%\section*{Tables}
+%\begin{table}[h!]
+%\caption{Sample table title. This is where the description of the table should go.}
+%      \begin{tabular}{cccc}
+%        \hline
+%           & B1  &B2   & B3\\ \hline
+%        A1 & 0.1 & 0.2 & 0.3\\
+%        A2 & ... & ..  & .\\
+%        A3 & ..  & .   & .\\ \hline
+%      \end{tabular}
+%\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Additional Files              %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section*{Additional Files}
+%  \subsection*{Additional file 1 --- Sample additional file title}
+%    Additional file descriptions text (including details of how to
+%    view the file, if it is in a non-standard format or the file extension).  This might
+%    refer to a multi-page table or a figure.
+
+%  \subsection*{Additional file 2 --- Sample additional file title}
+%    Additional file descriptions text.
 
 
-%\end{backmatter}
+\end{backmatter}
 \end{document}
+
+
+
+
