@@ -150,9 +150,9 @@
    email={riffe@demogr.mpg.de}   % email address
 ]{\inits{TR}\fnm{Tim} \snm{Riffe}}
 \author[
-   addressref={aff2, aff3},
-   email={cohen@mail.rockefeller.edu}
-]{\inits{JEC}\fnm{Joel E.} \snm{Cohen}}
+   addressref={aff3, aff2, aff1},
+   email={williams@demogr.mpg.de }
+]{\inits{IW}\fnm{Iv\'an} \snm{Williams}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                          %%
@@ -171,14 +171,14 @@
  % \cny{DE}                                    % country
 }
 \address[id=aff2]{%
-  \orgname{The Rockefeller University}
+  \orgname{Universidad de Buenos Aires}
  % \street{D\"{u}sternbrooker Weg 20},
  % \postcode{24105}
  % \city{Kiel},
  % \cny{Germany}
 }
 \address[id=aff3]{%
-  \orgname{Columbia University}
+  \orgname{Instituto Nacional de Estad\'istica y Censos}
   %\street{D\"{u}sternbrooker Weg 20},
   %\postcode{24105}
   %\city{Kiel},
@@ -235,9 +235,10 @@ The variance of state occupancy time is only identified if a) state life traject
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{keyword}
+\kwd{Health}
+\kwd{Mortality}
 \kwd{Healthy life expectancy}
 \kwd{Sullivan method}
-\kwd{Healthy life variance}
 \kwd{Health inequality}
 \kwd{Lifetable}
 \end{keyword}
@@ -279,11 +280,11 @@ The variance of state occupancy time is only identified if a) state life traject
 % <put your article body there>
 
 \section*{Introduction}
-Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either due to violations of the assumption of homogeneity of risk sets or due to random variation between people otherwise subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Transition-based multistate models are flexible with respect to the patterns they can reproduce, but there is no consensus on best practices for state-spaces and which time dimensions ought to structure transitions. Most practitioners produce estimates with the Sullivan method \citep{sullivan1971single} becuse it is often the only viable option, but some Markov skeptics accept the simpler Sullivan method despite its flaws due its process-free interpretation. For the present, let's take the Sullivan estimate of life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs. 
+Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either because individuals are subject to different underlying risks or due to random variation between people subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. \sout{Transition-based multistate models are flexible with respect to the patterns they can reproduce, but there is no consensus on best practices for state-spaces and which time measures ought to structure transitions.} Most practitioners produce health expectancy estimates using the Sullivan method \citep{sullivan1971single} because its lower demands for data inputs often make it the only viable option. Some Markov skeptics accept the simpler Sullivan method despite its flaws due its process-free interpretation. For the present, let's take the Sullivan estimate of life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs, a quantity we call the \emph{Sullivan variance} in the following. 
 
-In this paper I argue that no single variance is implied, that in fact infinitely many variances are possible under minimal Sullivan constraints. Instead further assumptions are required to constrain as necessary and arrive at variance calculations. Two such approaches are available assuming that variance results from 1) a discrete time Bernoulli process and 2) from prevalence as a fixed property within age \citep{caswell2018matrix}. I first translate these two present approaches to a more familiar demographic notation and interpretation, and illustrate their implications with a worked example. I argue that neither of these approaches reflects health prevalence patterns particularly well, and that this observation is not innocuous for variance estimation. I then give my own best approximation of Sullivan variance given what we know about how health processes work. This is at best a hackish patch for an otherwise intractable problem, but we make the best use of some stationary population properties and some observations of incidence-prevalence relationships to give some hopefully-useful rules of thumb. 
+We argue that no single variance is implied, that in fact infinitely many variances are possible under minimal Sullivan constraints. Instead further assumptions are required to constrain as necessary and arrive at variance calculations. Two such approaches are available assuming that variance results from 1) a discrete time Bernoulli process and 2) from prevalence as a fixed property within age \citep{caswell2018matrix}. We first translate these two present approaches to a more familiar demographic notation and interpretation, and illustrate their implications with a worked example. We argue that neither of these approaches reflects health prevalence patterns particularly well, and that this observation is not innocuous for variance estimation. We then illustrate the variance consequences that would result from some other assumptions in an attempt to contextualize the fixed rewards and Bernoulli assumptions. We algorithmically produce approximate upper and lower bounds. We also offer a new approach to approximate Sullivan variance given a small set of evidence-based assumptions of what health prevalence patterns look like as a function of both age and time until death \citep{klijs2010disability, riffe2016time, riffe2017hle}. This is at best a hackish patch for an otherwise intractable problem, but we make the best use of some stationary population properties and some observations of incidence-prevalence relationships to give some hopefully-useful rules of thumb. 
 
-At best these rules of thumb will stimulate further efforts to improve them into something that might be adopted in practice, although it would also be a perfectly good outcome if practitioners simply withheld from calculating the variance of state occupancy for Sullivan (health) inputs unless the health process and available approximations are well understood and judged apt. Presently available methods may indeed be apt in other domains, I simply argue here that for many health conditions the assumptions required are injurious to good measurement.
+At best these rules of thumb will stimulate further efforts to improve them into something that might be adopted in practice, although it would also be a perfectly good outcome if practitioners simply withheld from calculating the variance of state occupancy for Sullivan (health) inputs unless the health process and available approximations are well understood and judged apt. Presently available methods may indeed be apt in other domains, but we argue here that for many health conditions the assumptions required are injurious to good measurement.
 
 
 
@@ -296,7 +297,7 @@ e^H(x) = \frac{1}{\ell(x)} \int_x^\omega \ell(t)\pi(t) \mathrm{d}t
 \end{equation}
 %
 
-Replace $\pi$ with its complement to arrive at the complementary expectancy, $e^U(x)$, such that overall life expectancy for this age is $e(x) = e^U(x) + e^H(x)$, a rudimentary decomposition. Throughout this exposition, and for the sake of comparing methods, I stick to an odd choice of discretization of \ref{eq:sull}, which assumes that an age entered is an age fully lived, i.e., that an age entered is a reward earned if one thinks in a markov rewards framework. For the case of \eqref{eq:sull}, this translates to:
+Replace $\pi$ with its complement to arrive at the complementary expectancy, $e^U(x)$, such that overall life expectancy for this age is $e(x) = e^U(x) + e^H(x)$, a rudimentary decomposition. Throughout this exposition, and for the sake of comparing methods, I stick to an odd choice of discretization of \ref{eq:sull}, which assumes that an age entered is an age fully lived, i.e., that an age entered is a reward earned if one thinks in a Markov rewards framework. For the case of \eqref{eq:sull}, this translates to:
 \begin{equation}
 \label{eq:sulldisc}
 e^H(x) = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\pi_t \quad \mathrm{,}
@@ -389,7 +390,7 @@ gives the probability of experiencing the given sequence of states conditional o
 The stationary sequence distribution depicted in Fig.~\ref{fig:b4} underlies the occupancy time distribution implied by our Bernoulli prevalence example. The heights of each sequence in this graph give the weights to assign to each trajectory, the item we wish to weight is the total number of black boxes per trajectory in Fig~\ref{fig:b1}, which gives the total time spent in the state of interest. For example, three of the trajectories (1,3,7) do not include time spent in the state, and only one of the sequences (14) consists in three years spent in the state. Fig.~\ref{fig:DiDist} shows the stationary distribution of state occupancy, with contributions from each trajectory stacked and indicated with labelled tick marks. This distribution gives an alternate path to the expectation of state occupancy of \eqref{eq:sull} and the variance of \eqref{eq:var2}. 
 \begin{figure}[ht!]
 \centering
-\includegraphics[scale=.6]{Figures/DiDist_Ink.pdf}
+\includegraphics[scale=.6]{Figures/DiDist.pdf}
 \caption{The distribution of occupancy time defined by a Bernoulli interpretation of the prevalence and lifetable given in Tab.~\ref{tab:toy}. The height of each segment gives the proportion of lives the experience the total time given on the $x$ axis. Sub-segments indicated with labelled tick marks indicate the contributions from each sequence in Fig.~\ref{fig:bernexplain}.}\label{fig:DiDist}
 \end{figure}
 \FloatBarrier
@@ -438,10 +439,10 @@ The purpose of
   The authors declare that they have no competing interests.
 
 \section*{Author's contributions}
-  Both authors conceived of this project, undertook formal analysis, validation, drafting, and reviewing of the manuscript. \censor{TR} did the data analysis, coding, visualization, and reproducibility repository curation.
+  \censor{TR} conceived of this project, did the data visualization and reproducibility repository curation. Both authors undertook formal analysis, data analysis, coding, validation, drafting, and reviewing of the manuscript. 
 
 \section*{Acknowledgements}
-   Thanks to Douglas Wolf and Jennifer Karas Montez for posing a question that led to this work, and to Hal Caswell and Virginia Zarulli for the groundwork on which this is based and for fielding inquiries.
+   Thanks to \censor{Douglas Wolf} and \censor{Jennifer Karas Montez} for posing a question that led to this work, and to \censor{Hal Caswell} and \censor{Virginia Zarulli} for the groundwork on which this is based and for fielding inquiries.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
 %%                                                         %%
