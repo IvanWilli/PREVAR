@@ -342,7 +342,7 @@ Var_x = \frac{1}{l_x}\sum_{t=x}^\omega (\mathcal{P}_t - \eta^{(1)}_x)^2 d_t \qua
 where $\mathcal{P}_t$ is the cumulative prevalence from age $x$ to age $t$, and $d_t$ is the probability of surviving from age $x$ to age $t$ and then dying in age $t$, $(q_t l_t)/l_x$. 
 
 \section{Illustrations of Bernoulli and fixed rewards}
-To add intuition to the previous equations I give a worked example of manageable size. Define a population with three discrete age groups of uniform width 1, and assume that state transitions occur only on birthdays (this is relaxable). The prevalent state, say sickness, is coded with 1, whereas its complement is coded with 0. Then all 14 possible life trajectories are given in Fig.~\ref{fig:b1}. Some prevalence $\pi_x$, its complement, and some lifetable functions are given in Tab~\ref{tab:toy}.
+To add intuition to the previous equations we give a worked example of manageable size. Define a population with three discrete age groups of uniform width 1, and assume that state transitions occur only on birthdays. The prevalent state, say sickness, is coded with 1, whereas its complement is coded with 0. Then all 14 possible life trajectories are given in Fig.~\ref{fig:b1}. Some prevalence $\pi_x$, its complement, and some lifetable functions are given in Tab~\ref{tab:toy}.
 
 \begin{table}[ht!]
 \begin{tabular}{r|ccccl}
@@ -358,8 +358,7 @@ age & $\pi_x$ & $1-\pi_x$ & $l_x$ & $d_x$ & $q_x$\\
 
 \subsection{Bernoulli illustration}
 \label{sec:bi}
-Fig.~\ref{fig:b1} imputes values of $\pi_x$ and $1-\pi_x$ from Tab~\ref{tab:toy} into their respective positions for all 14 possible discrete life trajectories. The product of the proportions in each life sequence
-gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps, each of height 1. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ in Tab.~\ref{tab:toy}. For example, the probability of the 14th trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$
+Fig.~\ref{fig:b1} show each of the possible discrete trajectories, with 1 (black) standing for the prevalent state, and otherwise 0 (white). This model implies 14 possible lives. Each life trajectory is read horizontally from left to right in this representation, with shorter lives at the top and longer lives at the bottom. Fig.~\ref{fig:b2} imputes values of $\pi_x$ and $1-\pi_x$ from Tab.~\ref{tab:toy} into their respective positions for each discrete life trajectory. The product of the proportions in each life sequence gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ from Tab.~\ref{tab:toy}. For example, the probability of the \nth{14} trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$.
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.4\textwidth}
@@ -389,7 +388,7 @@ gives the probability of experiencing the given sequence of states conditional o
 \end{figure}
 \FloatBarrier
 
-The stationary sequence distribution depicted in Fig.~\ref{fig:b4} underlies the occupancy time distribution implied by our Bernoulli prevalence example. The heights of each sequence in this graph give the weights to assign to each trajectory, the item we wish to weight is the total number of black boxes per trajectory in Fig~\ref{fig:b1}, which gives the total time spent in the state of interest. For example, three of the trajectories (1,3,7) do not include time spent in the state, and only one of the sequences (14) consists in three years spent in the state. Fig.~\ref{fig:DiDist} shows the stationary distribution of state occupancy, with contributions from each trajectory stacked and indicated with labelled tick marks. This distribution gives an alternate path to the expectation of state occupancy of \eqref{eq:sull} and the variance of \eqref{eq:var2}. 
+The stationary trajectory distribution depicted in Fig.~\ref{fig:b4} underlies the occupancy time distribution implied by our Bernoulli prevalence example. The heights of each trajectory in this graph give the weights to assign to each trajectory, the item we wish to weight is the total number of prevalent intervals (black steps) per trajectory in Fig~\ref{fig:b1}, which gives the total time spent in the state of interest. For example, three of the trajectories (1,3,7) do not include time spent in the state, and only one of the sequences (14) consists in three years spent in the state. Fig.~\ref{fig:DiDist} shows the stationary distribution of state occupancy, with contributions from each trajectory stacked and indicated with labelled tick marks. This distribution gives an alternate path to the expectation of state occupancy of \eqref{eq:sull} and the variance of \eqref{eq:var2}. 
 \begin{figure}[ht!]
 \centering
 \includegraphics[scale=.6]{Figures/DiDist.pdf}
@@ -400,7 +399,7 @@ The stationary sequence distribution depicted in Fig.~\ref{fig:b4} underlies the
 In our case the expectation at birth of time spent in the state is 0.71 years under Bernoulli prevalence assumptions, and the variance is 0.5379. These are identical results to those obtained from the matrix methods of \cite{caswell2018matrix} if one assumes that a full reward is assigned on entrance into an age/state.
 
 \subsection{Fixed reward illustration}
-We can also recycle values from Tab~\ref{tab:toy} to illustrate the meaning of fixed rewards. In this case $\mathcal{P}$ obtains the values $[0.1,0.6,1.3]$, and $d_x$ are our weights used to average these, giving us the same expectation of 0.71 years, but \eqref{eq:varfixed2} implies a variance of $0.1849$, quite different from the Bernoulli assumption. Under fixed rewards, one might redraw Fig.~\ref{fig:b4} as of a 2d uniform distribution under $l_x$ and within age bins, as in Fig.~\ref{fig:c1}, or else as binary year fractions, as in Fig.~\ref{fig:c2}. Indeed there are infinitely many ways to satisfy the constraints of fixed rewards by moving prevalence mass around within horizontal strips of age bins for this discrete case. Key for this case is that the cumulative value along any horizontal bisection is identical on birthday transitions.
+We also use values from Tab~\ref{tab:toy} to illustrate the meaning of fixed rewards. In this case $\mathcal{P}$ obtains the values $[0.1,0.6,1.3]$, and $d_x$ are our weights used to average these, giving us the same expectation of 0.71 years, but \eqref{eq:varfixed2} implies a variance of $0.1849$, much lower than the Bernoulli assumption. Under fixed rewards, one might redraw Fig.~\ref{fig:b4} as of a 2d uniform distribution under $l_x$ and within age bins, as in Fig.~\ref{fig:c1}, or else as binary year fractions, as in Fig.~\ref{fig:c2}. There are many other ways to satisfy the constraints of fixed rewards by moving prevalence mass around within horizontal strips of age bins for this discrete case. Key for this case is that the cumulative value along any horizontal bisection is identical on birthday transitions.
 
 \begin{figure}
 \centering
@@ -415,13 +414,33 @@ We can also recycle values from Tab~\ref{tab:toy} to illustrate the meaning of f
         \caption{Fixed rewards as identical binary bands within age classes.}
         \label{fig:c2}
     \end{subfigure}
-    \caption{Two interpretations of fixed rewards following the data of Tab.~\ref{tab:toy}. In Fig.~\ref{fig:c1} grayscale is proportional to the prevalence value, and in Fig.~\ref{fig:c2} the state is binary but assigned to an equal fraction of the year within age classes. There are also infinitely may ways to distribute states within age classes such that the same fraction is held}
+    \caption{Two interpretations of fixed rewards following the data of Tab.~\ref{tab:toy}. In Fig.~\ref{fig:c1} grayscale is proportional to the prevalence value, and in Fig.~\ref{fig:c2} the state is binary but assigned to an equal fraction of the year within age classes. There are infinitely many other ways to distribute states within age classes such that the same fraction is held.}
     \label{fig:fixedexplain}
 \end{figure}
 \FloatBarrier
 
 \section{Alternative prevalence scenarios and their variances}
-The purpose of 
+
+\subsection{Variance from randomized prevalence assignment}
+
+\subsection{Top-down and bottom-up variance}
+
+These are derived from the most common ways of drawing state distributions by age, or state burden by age, respectively.
+
+\subsection{Maximum variance}
+
+\subsection{Minimum variance}
+
+\section{An empirically plausible variance approach}
+
+\subsection{Observations motivating a new approach}
+
+\subsection{Our approach}
+
+\subsection{Sensitivity}
+
+\section{Application}
+
 
 \pagebreak
 %\nocite{oreg,schn,pond,smith,marg,hunn,advi,koha,mouse}
