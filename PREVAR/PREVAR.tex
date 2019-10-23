@@ -219,11 +219,11 @@
 \parttitle{Objective} 
 We aim to clarify the assumptions of this approach, give bounds to its reasonableness, and suggest improvements.
 \parttitle{Methods} 
-We use simplified toy data to demonstrate concepts, and then I use HRS data for different health conditions to derive some empirical guidelines. I calculate results for extreme cases to provide bounds, simulate variance under simple assumptions, and simulate a more natural inter-individual state distribution.
+We use small scale examples to demonstrate concepts, and then we use HRS data for different health conditions to derive some empirical guidelines. We calculate results for extreme cases to provide bounds, simulate variance under simple assumptions, and simulate a more natural inter-individual state distribution.
 \parttitle{Results} 
-We show that state occupancy variance for Sullivan-style inputs is not identified, and I show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
+We show that state occupancy variance for Sullivan-style inputs is not identified, and we show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
 \parttitle{Conclusions} 
-The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancies.
+The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancy.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,17 +279,17 @@ The variance of state occupancy time is only identified if a) state life traject
 %%%%%%%%%%%%%%%%%%%%%%%%% start of article main body
 % <put your article body there>
 
-\section*{Introduction}
-Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either because individuals are subject to different underlying risks or due to random variation between people subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Producing multistate models is however not a trivial matter, due both to the need for longitudinal health and survival data, and the modeling overhead involved in estimating transition rates or probabilities. Most estimates of health expectancy are based on the Sullivan method \citep{sullivan1971single} because its lower demands for data inputs (age-structured of survivorship and health prevalence) and simpler calculation often make it the only viable option. Some Markov skeptics accept the simpler Sullivan method despite its strong and often-violated assumptions \citep{mathers1997good, imai2007estimation} due to its process-free interpretation. For the present, let's take the Sullivan estimate of life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs, a quantity we call the \emph{Sullivan variance} in the following. 
+\section{Introduction}
+Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either because individuals are subject to different underlying risks or due to random variation between people subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Producing multistate models is however not a trivial matter, due both to the need for longitudinal health and survival data, and the modeling overhead involved in estimating transition rates or probabilities. Most estimates of health expectancy are based on the Sullivan method \citep{sullivan1971single} because its lower demands for data inputs (age-structured of survivorship and health prevalence) and simpler calculation often make it the only viable option. Some Markov skeptics accept the simpler Sullivan method despite its strong and often-violated assumptions \citep{mathers1997good, imai2007estimation} due to its process-free interpretation. For the present, let's take the Sullivan estimate of healthy life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs, a quantity we call the \emph{Sullivan variance} in the following. 
 
-We show that variance is not uniquely identified, that in fact infinitely many variances are possible given only information on Sullivan inputs. Instead further assumptions, essentially \emph{process} assumptions, are required to constrain and arrive at variance calculations. Two such approaches are available assuming that variance results from 1) a discrete time Bernoulli process and 2) from prevalence as a fixed property within age and experienced homogeneously by the members of a cohort \citep{caswell2018matrix}. We first translate these two present approaches to a more demographic notation and interpretation, and illustrate their implications with a simple worked example. We argue that neither of these approaches reflects health prevalence patterns particularly well, and that this observation is consequential for variance estimation. We then contextualize the fixed rewards and Bernoulli assumptions by comparing results with those from other illustrative assumptions. We algorithmically produce approximate upper and lower bounds for state variance. We also offer a new approach to approximate the Sullivan variance given a small set of evidence-based assumptions about what health prevalence patterns look like as a function of both age and time until death \citep{klijs2010disability, riffe2016time, riffe2017hle}. Our approximation is at best a guess for an otherwise intractable problem, but it takes advantage of certain incidence-prevalence relationships to give useful rules of thumb. We provide an \texttt{R} package for estimating variance and other dispersion metrics from Sullivan inputs using our approach.
+We show that variance is not uniquely identified, and that in fact infinitely many variances are possible given only information on Sullivan inputs. Instead further assumptions, essentially \emph{process} assumptions, are required to constrain and arrive at variance calculations. Two such approaches are available assuming that variance results from 1) a discrete time Bernoulli process and 2) from prevalence as a fixed property within age and experienced homogeneously by the members of a cohort \citep{caswell2018matrix}. We first translate these two present approaches to a lifetable notation and interpretation, and illustrate their implications with a simple worked example. We argue that neither of these approaches reflects health prevalence patterns well, and that this observation is consequential for variance estimation. We then contextualize the fixed rewards and Bernoulli assumptions by comparing results with those from other illustrative assumptions. We algorithmically produce approximate upper and lower bounds for state variance. We also offer a new approach to approximate the Sullivan variance given a small set of evidence-based assumptions about what health prevalence patterns look like as a function of both age and time until death \citep{klijs2010disability, riffe2016time, riffe2017hle}. Our approximation is at best a guess for an otherwise intractable problem, but it takes advantage of certain incidence-prevalence relationships to give useful rules of thumb. We provide an \texttt{R} package for estimating variance and other dispersion metrics from Sullivan inputs using our approach.
 
 At best these rules of thumb will stimulate further efforts to improve them into something that might be adopted in practice, although it would also be a perfectly good outcome if practitioners simply withheld from calculating the variance of state occupancy for Sullivan (health) inputs unless the health process and available approximations are well understood and judged apt. Presently available methods may indeed be apt in other domains, but we argue here that for many health conditions the assumptions required are injurious to good measurement.
 
 [Forthcoming: paragraph to outline structure of article.]
 
-\section*{Sullivan in continuous time}
-Let's begin with some familiar notation, $\ell(x)$ denotes lifetable survivorship, with an arbitrary radix, or starting population. If $\ell(0) = 1$ then $\ell(x)$ can be interpreted as a probability of surviving from birth until age $x$. $\pi(x)$ is the prevalence of a given condition (healthiness or unhealthiness, disability) at age $x$, and it falls in the range $[0,1]$, giving it a probability interpretation. The commonly used Sullivan method \citep{sullivan1971single} of calculating healthy life expectancy, $e^H(x)$ is to integrate the product of these two functions.
+\section{State expectancies with Sullivan method}
+Let's begin with some demographic notation, $\ell(x)$ denotes lifetable survivorship at age $x$. $\pi(x)$ is the prevalence of a given state (for example, healthy or unhealthy) at age $x$, and it falls in the range $[0,1]$, giving it a probability interpretation. The widely used Sullivan method \citep{sullivan1971single} of calculating healthy life expectancy, $e^H(x)$ consists in the integral of the product of these two functions.
 %
 \begin{equation}
 \label{eq:sull}
@@ -297,17 +297,17 @@ e^H(x) = \frac{1}{\ell(x)} \int_x^\omega \ell(t)\pi(t) \mathrm{d}t
 \end{equation}
 %
 
-Replace $\pi$ with its complement to arrive at the complementary unhealthy life expectancy, $e^U(x)$, such that overall life expectancy for this age is $e(x) = e^U(x) + e^H(x)$, a rudimentary decomposition. Throughout this exposition, and for the sake of comparing methods, I stick to an odd choice of discretization of \ref{eq:sull}, which assumes that an age entered is an age fully lived, i.e., that an age entered is a reward earned if one thinks in a Markov rewards framework. For the case of \eqref{eq:sull}, this translates to:
+Replace $\pi$ with its complement to arrive at the complementary unhealthy life expectancy, $e^U(x)$, such that overall life expectancy for this age is $e(x) = e^U(x) + e^H(x)$, a basic decomposition. Throughout this exposition, and for the sake of comparing methods, we adhere to a non-standard choice of discretization of \ref{eq:sull}, which assumes that an age entered is an age fully lived, i.e., that an age entered is a reward earned if in a Markov rewards framework. For the case of \eqref{eq:sull}, this translates to:
 \begin{equation}
 \label{eq:sulldisc}
 e^H(x) = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\pi_t \quad \mathrm{,}
 \end{equation}
 where subscripts denote the lower bound of the age interval, and function values are assumed constant through the interval. Age intervals are omitted from notation throughout for clarity. Under normal circumstances, one would prefer to replace $\ell_x$ inside the summation with $L_x$ to account for attrition over the course of the year, but we resist this temptation to keep later comparisons simple.
 
-\section*{Two assumptions}
-If we would like to know something about the variance of state occupancy in a Sullivan setup, then we must make some assumptions about how the state is distributed over individuals. The Sullivan method does not state which between-individual state distribution underlies prevalence in a given age. If $\pi(x) = 0.5$, shall we assign each individual age $x$ a value of 0.5 a so-called \emph{fixed reward}, or shall we assign half of them a value of 1, and the other half a value of 0, a \emph{Bernoulli reward} \citep{caswell2018matrix}? Or something else entirely? There are infinitely many ways to distribute state $\pi$ among individuals in age $x$ such that the value $\pi(x)$ is maintained. By extension, the inter-individual distribution of total time spent in state $\pi$ is also infinitely variable, which implies that the variance and other moments of implied state occupancy are not uniquely identified. 
+\section{Definitions of Bernoulli and fixed rewards}
+If we would like to know something about the variance of state occupancy in a Sullivan setup, then we must make some assumptions about how the state is distributed over individuals. The Sullivan method does not state which between-individual state distribution underlies prevalence in a given age. If $\pi(x) = 0.5$, shall we assign each individual age $x$ a value of 0.5 a so-called \emph{fixed reward}, or shall we assign half of them a value of 1, and the other half a value of 0, a \emph{Bernoulli reward} \citep{caswell2018matrix}? Or something else entirely? There are infinitely many ways to distribute state $\pi$ among individuals in age $x$ such that the value $\pi(x)$ is maintained. By extension, the inter-individual distribution of total time spent in state $\pi$ could also take infinitely many forms. If all we measure is the marginal age pattern of prevalence, then this key underlying distribution is unknown. In other words, the variance and other moments of implied state occupancy are not uniquely identified in the Sullivan framework. 
 
-Expressing the lifetable as a Markov chain with \emph{rewards} defined as prevalence gives a unique definition for the variance of state occupancy for each of the above assumptions, but it is unclear to me how well-supported these are. Many other reward types are discussed by Caswell \& Zarulli \cite{caswell2018matrix}, and I do not discuss these, nor do I treat the case of multistate populations. Even so, the conclusions reached here will generalize to the case of multistate populations.
+Expressing the lifetable as a Markov chain with \emph{rewards} defined as prevalence gives a unique definition for the variance of state occupancy for each of these two assumptions, but it is unclear how empirically valid these assumptions are. Many other reward types are discussed by Caswell \& Zarulli \cite{caswell2018matrix}, and we do not discuss these, nor do we treat the case of multistate flow models with rewards. \sout{Even so, the conclusions reached here will generalize to the case of multistate populations.}
 
 %We will use two shorthand and equivalent forms to calculate variance, depending on the situation. First the mean of the squared residuals:
 %\begin{equation}
@@ -315,8 +315,8 @@ Expressing the lifetable as a Markov chain with \emph{rewards} defined as preval
 %\end{equation}
 %where in practice the outer expectation is taken as the sum of the squared residuals duly weighted by their respective probabilities of ocurring. The second is
 
-\subsection*{Bernoulli rewards}
-I first give my own lifetable deconstruction of the matrix algebra approach given to Bernoulli state variance in \cite{caswell2018matrix}. Average years lived in good health $e^H(x)$ is defined per \eqref{eq:sull}, and it is the first moment of state occupancy, which we can denote $\eta^{(1)}$, where the superscript in parentheses denotes the moment number and is not a power. We continue to calculate the second moment of state occupancy, $\eta^{(2)}$ as:
+\subsection{Bernoulli rewards}
+We start with a lifetable translation of the matrix algebra approach given to Bernoulli state variance in \cite{caswell2018matrix}. Average years lived in good health $e^H(x)$ is defined per \eqref{eq:sull}, and it is the first moment of state occupancy, which we can denote $\eta^{(1)}$, where the superscript in parentheses denotes the moment number and is not a power. The second moment of state occupancy, $\eta^{(2)}$ is calculated as in \eqref{eq:bern2}:
 \begin{equation}
 \label{eq:bern2}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
@@ -327,20 +327,21 @@ where $q_x$ is the probability of death in the interval and $\omega$ is the high
 Var_x = \eta^{(2)}_x - (\eta^{(1)}_x)^2
 \end{equation}
 
-I highlight two assumptions behind this expression: 1) mortality is independent of whether one is in the prevalent state, and 2) the same Bernoulli prevalence extends to any further stratification of the members in a given age class, $x$.
+We highlight two assumptions behind this expression: 1) mortality is independent of whether one is in the prevalent state, and 2) the same Bernoulli prevalence extends to any further stratification of the members in a given age class, $x$. We illustrate this case visually in section~\ref{sec:bi}.
 
-\subsection*{Fixed rewards}
-If instead of assuming that prevalence is partitioned in a binary fashion, and each individual experiences $\pi_x$ fraction of the year in the state, then equation \eqref{eq:bern2} becomes
+\subsection{Fixed rewards}
+If we instead assume that each individual experiences $\pi_x$ fraction of the year in age $x$ in the prevalent state, then equation \eqref{eq:bern2} becomes
 \begin{equation}
 \eta^{(2)}_x = \frac{1}{\ell_x} \sum_{t=x}^\omega \ell_t\left[\pi_t^2 + 2(1-q_t)\pi_t\eta^{(1)}_t\right] \quad \mathrm{,}
 \end{equation}
-and \eqref{eq:var2} is the same. State occupancy variance under the assumption of fixed rewards also has a more intuitive lifetable expression:
+and \eqref{eq:var2} is the same. The variance of state occupancy under the assumption of fixed rewards also has a more intuitive lifetable expression:
 \begin{equation}
 \label{eq:varfixed2}
-Var_x = \frac{1}{l_x}\sum_x^\omega (\mathcal{P}_t - \eta^{(1)}_x)^2 d_t \quad\mathrm{,}
+Var_x = \frac{1}{l_x}\sum_{t=x}^\omega (\mathcal{P}_t - \eta^{(1)}_x)^2 d_t \quad\mathrm{,}
 \end{equation}
-where $\mathcal{P}_t$ is the cumulative prevalence from age $x$ to age $t$, and $d_t$ is the probability of survival from age $x$ to age $t$, defined as $(q_t l_t)/l_x$. 
-\section{Illustrations of Bernoulli and fixed prevalence}
+where $\mathcal{P}_t$ is the cumulative prevalence from age $x$ to age $t$, and $d_t$ is the probability of surviving from age $x$ to age $t$ and then dying in age $t$, $(q_t l_t)/l_x$. 
+
+\section{Illustrations of Bernoulli and fixed rewards}
 To add intuition to the previous equations I give a worked example of manageable size. Define a population with three discrete age groups of uniform width 1, and assume that state transitions occur only on birthdays (this is relaxable). The prevalent state, say sickness, is coded with 1, whereas its complement is coded with 0. Then all 14 possible life trajectories are given in Fig.~\ref{fig:b1}. Some prevalence $\pi_x$, its complement, and some lifetable functions are given in Tab~\ref{tab:toy}.
 
 \begin{table}[ht!]
@@ -356,6 +357,7 @@ age & $\pi_x$ & $1-\pi_x$ & $l_x$ & $d_x$ & $q_x$\\
 \end{table}
 
 \subsection{Bernoulli illustration}
+\label{sec:bi}
 Fig.~\ref{fig:b1} imputes values of $\pi_x$ and $1-\pi_x$ from Tab~\ref{tab:toy} into their respective positions for all 14 possible discrete life trajectories. The product of the proportions in each life sequence
 gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps, each of height 1. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ in Tab.~\ref{tab:toy}. For example, the probability of the 14th trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$
 \begin{figure}
