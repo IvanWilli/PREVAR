@@ -311,3 +311,26 @@ lambda_poly <- function(x,...){
   out
 }
 
+# x  <- seq(.5,1,length=100)
+# p1 <- seq(0,10,length=10)
+# p2 <- seq(0,10,length=10)
+# 
+# plot(x,dbeta(x,12,5))
+
+
+
+beta_min <- function(pars = c(scale = 1, shape1 = 10, shape2 = 5), 
+                     lx, x, piObs){
+  
+  xbeta   <- seq(.5,1,length = length(x)) # ^ pars["z"]
+  
+  lambdas <- pars["scale"] * dbeta(xbeta, shape1 =  pars["shape1"], shape2 =  pars["shape2"])
+  
+  PiEst   <- getPiEst(lx,x,lambdas)
+  
+  sum((PiEst - piObs)^2 )
+}
+
+
+
+
