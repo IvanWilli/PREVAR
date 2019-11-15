@@ -1,5 +1,6 @@
 # parametrize only on adjusted lambdas because of reverse iteration only runs like that: 
 # doesn´t fit all ages at the same time
+<<<<<<< HEAD
 
 ### prev mirror (more positive more compressed)
 prev_sv_simetric = function(x, y, S, lambda=3){ # x vector of ages at death
@@ -18,6 +19,26 @@ get_lambda = function(lambda, S, x_ini, x_fin, PrevObs_x, lives){
                      y = x_fin, S = S, lambda = lambda)$value * lives
   (PrevObs_x - Prev_x)^2}
 
+=======
+
+### prev mirror (more positive more compressed)
+prev_sv_simetric = function(x, y, S, lambda=3){ # x vector of ages at death
+  xS = pmax(x-(y-S), 0)
+  p <- (xS * exp(abs(lambda) * (xS - S)))/S
+  p[p > 1 | is.nan(p)] <- 0
+  if(lambda<0){
+    pi = sort(1 - p[p>0])
+    p[p>0] = pi
+  }
+  p
+}
+### que lambda obtiene prevalencia en años person
+get_lambda = function(lambda, S, x_ini, x_fin, PrevObs_x, lives){
+  Prev_x = integrate(f = prev_sv_simetric, lower =  x_ini, upper = x_fin, subdivisions = 20000, 
+                     y = x_fin, S = S, lambda = lambda)$value * lives
+  (PrevObs_x - Prev_x)^2}
+
+>>>>>>> 56b320f3fde71942cdea2be32e45ddcafbffdf60
 ### Mortality
 x <- 50:99
 lx <- c(100000L, 99326L, 99281L, 99249L, 99226L, 99208L, 99194L, 99182L, 
@@ -131,6 +152,7 @@ lambda_estimate <- function(Pi_Obs, S = 10, lambda_limit = c(0,100)){
   par(mfrow=c(1,1))
   
   return(list(lambdas_df))
+<<<<<<< HEAD
 
 }
 
@@ -158,6 +180,49 @@ l2 = lambda_estimate(Pi_Obs2)
 l3 = lambda_estimate(Pi_Obs3)
 l4 = lambda_estimate(Pi_Obs4)
 l5 = lambda_estimate(Pi_Obs5)
+=======
+
+}
+
+################### THREE escenarios Prevalence (based in ...)
+
+Pi_Obs1 = 1/(1+exp(-.05*(x-120)))
+Pi_Obs3 = 1/(1+.012*exp(-.26*(x-120))) + .025
+Pi_Obs2 = (Pi_Obs1 + Pi_Obs3)/2
+Pi_Obs4 = 1/(1+.002*exp(-.355*(x-120))) + .02
+Pi_Obs5 = (Pi_Obs1+Pi_Obs2)/2
+
+
+plot(x, lx, t="s", main="lx")
+plot(x, Pi_Obs1, t="s", col=2, ylim=c(0,.3), ylab = "Prevalence")
+lines(x, Pi_Obs2, t="s", col=4)
+lines(x, Pi_Obs3, t="s", col=3)
+lines(x, Pi_Obs4, t="s", col=6)
+lines(x, Pi_Obs5, t="s", col=1)
+title("Time to death Prevalence scenarios")
+legend("topleft", c("Prev1","Prev2","Prev3","Prev4"), 
+       lty=1, col= c(2,4,3,6), bty = "n")
+
+l1 = lambda_estimate(Pi_Obs1)
+l2 = lambda_estimate(Pi_Obs2)
+l3 = lambda_estimate(Pi_Obs3)
+l4 = lambda_estimate(Pi_Obs4)
+l5 = lambda_estimate(Pi_Obs5)
+
+plot(x, l1[[1]]$lambda, col=2, t="o", ylim = c(0,5))
+lines(x, l2[[1]]$lambda, col=4, t="o")
+lines(x, l3[[1]]$lambda, col=3, t="o")
+lines(x, l4[[1]]$lambda, col=6, t="o")
+lines(x, l5[[1]]$lambda, col=1, t="o")
+
+legend("topleft", c("Prev1","Prev","Prev3", "Prev4"), lty=1, col= c(2,4,3,6), bty = "n")
+title("Lambda shape related with time to death prevalence profile")
+
+lll <- data.frame(x=x, prev=l3[[1]]$lambda) 
+model <- glm(data = lll, formula = prev ~ x, family = "Gamma")
+predicted_lambda <-  predict(model, newdata = as.data.frame(x))
+plot(x,lll);lines(x,predicted_lambda, col=2)
+>>>>>>> 56b320f3fde71942cdea2be32e45ddcafbffdf60
 
 plot(x, l1[[1]]$lambda, col=2, t="o", ylim = c(0,5))
 lines(x, l2[[1]]$lambda, col=4, t="o")
