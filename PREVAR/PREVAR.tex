@@ -150,7 +150,7 @@
    email={riffe@demogr.mpg.de}   % email address
 ]{\inits{TR}\fnm{Tim} \snm{Riffe}}
 \author[
-   addressref={aff3, aff2, aff1},
+   addressref={aff2, aff1},
    email={williams@demogr.mpg.de }
 ]{\inits{IW}\fnm{Iv\'an} \snm{Williams}}
 
@@ -171,19 +171,13 @@
  % \cny{DE}                                    % country
 }
 \address[id=aff2]{%
-  \orgname{Universidad de Buenos Aires}
+  \orgname{Universidad Nacional de Luján}
  % \street{D\"{u}sternbrooker Weg 20},
  % \postcode{24105}
  % \city{Kiel},
  % \cny{Germany}
 }
-\address[id=aff3]{%
-  \orgname{Instituto Nacional de Estad\'istica y Censos}
-  %\street{D\"{u}sternbrooker Weg 20},
-  %\postcode{24105}
-  %\city{Kiel},
-  %\cny{Germany}
-}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                          %%
@@ -241,6 +235,7 @@ The variance of state occupancy time is only identified if a) state life traject
 \kwd{Sullivan method}
 \kwd{Health inequality}
 \kwd{Lifetable}
+\kwd{Individual Variance}
 \end{keyword}
 
 % MSC classifications codes, if any
@@ -280,7 +275,7 @@ The variance of state occupancy time is only identified if a) state life traject
 % <put your article body there>
 
 \section{Introduction}
-Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either because individuals are subject to different underlying risks or due to random variation between people subject to the same risk. The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Producing multistate models is however not a trivial matter, due both to the need for longitudinal health and survival data, and the modeling overhead involved in estimating transition rates or probabilities. Most estimates of health expectancy are based on the Sullivan method \citep{sullivan1971single} because its lower demands for data inputs (age-structured of survivorship and health prevalence) and simpler calculation often make it the only viable option. Some Markov skeptics accept the simpler Sullivan method despite its strong and often-violated assumptions \citep{mathers1997good, imai2007estimation} due to its process-free interpretation. For the present, let's take the Sullivan estimate of healthy life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs, a quantity we call the \emph{Sullivan variance} in the following. 
+Health inequality is usually measured between populations by comparing life expectancies, health expectancies, or poor health expectancies. Within populations there is also inequality in health outcomes, either because individuals are subject to different underlying risks (heterogeneity) or due to random variation between people subject to the same risk (statistical variation). The life table and related statistics typically assume homogeneity of age trajectories of risk between individuals, and multistate models assume the same within states. Producing multistate models is however not a trivial matter, due both to the need for longitudinal health and survival data, and the modeling overhead involved in estimating transition rates or probabilities. Most estimates of health expectancy are based on the Sullivan method \citep{sullivan1971single} because its lower demands for data inputs (age-structured of survivorship and health prevalence) and simpler calculation often make it the only viable option. Some Markov skeptics accept the simpler Sullivan method despite its strong and often-violated assumptions \citep{mathers1997good, imai2007estimation} due to its process-free interpretation. For the present, let's take the Sullivan estimate of healthy life expectancy for granted and instead focus on within-population estimates of the variance of state occupancy time implied by the same data inputs, a quantity we call the \emph{Sullivan variance} in the following. 
 
 We show that variance is not uniquely identified, and that in fact infinitely many variances are possible given only information on Sullivan inputs. Instead further assumptions, essentially \emph{process} assumptions, are required to constrain and arrive at variance calculations. Two such approaches are available assuming that variance results from 1) a discrete time Bernoulli process and 2) from prevalence as a fixed property within age and experienced homogeneously by the members of a cohort \citep{caswell2018matrix}. We first translate these two present approaches to a lifetable notation and interpretation, and illustrate their implications with a simple worked example. We argue that neither of these approaches reflects health prevalence patterns well, and that this observation is consequential for variance estimation. We then contextualize the fixed rewards and Bernoulli assumptions by comparing results with those from other illustrative assumptions. We algorithmically produce approximate upper and lower bounds for state variance. We also offer a new approach to approximate the Sullivan variance given a small set of evidence-based assumptions about what health prevalence patterns look like as a function of both age and time until death \citep{klijs2010disability, riffe2016time, riffe2017hle}. Our approximation is at best a guess for an otherwise intractable problem, but it takes advantage of certain incidence-prevalence relationships to give useful rules of thumb. We provide an \texttt{R} package for estimating variance and other dispersion metrics from Sullivan inputs using our approach.
 
@@ -313,7 +308,7 @@ Expressing the lifetable as a Markov chain with \emph{rewards} defined as preval
 %\begin{equation}
 %Var(X) = \mathbb{E}\left[(X-\mathbb{E}[X])^2 \right] \quad \mathrm{,}
 %\end{equation}
-%where in practice the outer expectation is taken as the sum of the squared residuals duly weighted by their respective probabilities of ocurring. The second is
+%where in practice the outer expectation is taken as the sum of the squared residuals duly weighted by their respective probabilities of occurring. The second is
 
 \subsection{Bernoulli rewards}
 We start with a lifetable translation of the matrix algebra approach given to Bernoulli state variance in \cite{caswell2018matrix}. Average years lived in good health $e^H(x)$ is defined per \eqref{eq:sull}, and it is the first moment of state occupancy, which we can denote $\eta^{(1)}$, where the superscript in parentheses denotes the moment number and is not a power. The second moment of state occupancy, $\eta^{(2)}$ is calculated as in \eqref{eq:bern2}:
@@ -358,7 +353,7 @@ age & $\pi_x$ & $1-\pi_x$ & $l_x$ & $d_x$ & $q_x$\\
 
 \subsection{Bernoulli illustration}
 \label{sec:bi}
-Fig.~\ref{fig:b1} show each of the possible discrete trajectories, with 1 (black) standing for the prevalent state, and otherwise 0 (white). This model implies 14 possible lives. Each life trajectory is read horizontally from left to right in this representation, with shorter lives at the top and longer lives at the bottom. Fig.~\ref{fig:b2} imputes values of $\pi_x$ and $1-\pi_x$ from Tab.~\ref{tab:toy} into their respective positions for each discrete life trajectory. The product of the proportions in each life sequence gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ from Tab.~\ref{tab:toy}. For example, the probability of the \nth{14} trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$.
+Fig.~\ref{fig:b1} shows each of the possible discrete trajectories, with 1 (black) standing for the prevalent state, and otherwise 0 (white). This model implies 14 possible lives. Each life trajectory is read horizontally from left to right in this representation, with shorter lives at the top and longer lives at the bottom. Fig.~\ref{fig:b2} imputes values of $\pi_x$ and $1-\pi_x$ from Tab.~\ref{tab:toy} into their respective positions for each discrete life trajectory. The product of the proportions in each life sequence gives the probability of experiencing the given sequence of states conditional on total length of life. Fig~.~\ref{fig:b3} shows the same sequences, where height is scaled to the length-of-life conditional probability of observing the trajectory. The set of sequence probabilities within each length-of-life bin sum to 1, and this is why Fig~.~\ref{fig:b3} forms a set of even steps. These probabilities are not the probabilities-at-birth of observing the given sequence; for this the conditional probability of each sequence must be multiplied by the probability of surviving the respective length of time, in our case given by $d_x$ from Tab.~\ref{tab:toy}. For example, the probability of the \nth{14} trajectory is given by $0.1\times 0.5\times 0.7\times 0.3 = 0.0105$.
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.4\textwidth}
@@ -404,7 +399,7 @@ We also use values from Tab~\ref{tab:toy} to illustrate the meaning of fixed rew
 \begin{figure}
 \centering
     \begin{subfigure}[b]{0.4\textwidth}
-        \includegraphics[scale=.5]{Figures/fixedflat.pdf}
+        \includegraphics[scale=.5]{Figures/fixedflat.pdf}-
         \caption{Fixed rewards uniformly distributed within age classes.}
         \label{fig:c1}
     \end{subfigure}
@@ -463,7 +458,7 @@ These are derived from the most common ways of drawing state distributions by ag
   \censor{TR} conceived of this project, did the data visualization and reproducibility repository curation. Both authors undertook formal analysis, data analysis, coding, validation, drafting, and reviewing of the manuscript. 
 
 \section*{Acknowledgements}
-   Thanks to \censor{Douglas Wolf} and \censor{Jennifer Karas Montez} for posing a question that led to this work, and to \censor{Hal Caswell} and \censor{Virginia Zarulli} for the groundwork on which this is based and for fielding inquiries.
+   Thanks to \censor{Douglas Wolf} and \censor{Jennifer Karas Montez} for posing a question that led to this work, to \censor{Hal Caswell} and \censor{Virginia Zarulli} for the groundwork on which this is based and for fielding inquiries, and to \censor{Iñaki Permanyer} for helpful discussions..
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
 %%                                                         %%
