@@ -178,6 +178,12 @@ ttd_run <- ttd_ineq(x = x, lx = lx, bin = .5, Prev, S = 10,
 ttd_run <- ttd_ineq(x = x, lx = lx, bin = .5, Prev, S = 5, 
                     lambda_limit = c(0,100), ages_care = 50:99)
 
+# ttd_run <- ttd_ineq(x = x, lx = lx, bin = .2, Prev, S = seq(10,5,length=50), 
+#                     lambda_limit = c(0,100), ages_care = 50:99)
+# 
+
+
+
 # some incipient highlights (need chek in all space) -----------------------------------------------
   # less S better fit: ttd meaning
   # less bin better fit
