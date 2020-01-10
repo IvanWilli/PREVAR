@@ -12,11 +12,24 @@ prev_sv_simetric = function(x, y, S, lambda=3){ # x vector of ages at death
   }
   p
 }
+plot(prev_sv_simetric(0:10,10,5,1),t="o")
+lines(prev_sv_simetric(0:10,10,5,2),t="o")
+lines(prev_sv_simetric(0:10,10,5,.5),t="o")
+
+
 ### que lambda obtiene prevalencia en años person
 get_lambda = function(lambda, S, x_ini, x_fin, PrevObs_x, lives){
-  Prev_x = integrate(f = prev_sv_simetric, lower =  x_ini, upper = x_fin, subdivisions = 20000, 
-                     y = x_fin, S = S, lambda = lambda)$value * lives
-  (PrevObs_x - Prev_x)^2}
+            Prev_x = integrate(f = prev_sv_simetric, y = x_fin, S = S, lambda = lambda,
+                               lower =  x_ini, upper = x_fin, subdivisions = 20000)$value * lives
+            sum(abs(PrevObs_x - Prev_x))}
+
+integrate(f = prev_sv_simetric, alpha = dx[y], 
+          y = x[y+1], S = S, lambda = 55,
+          lower =  x[y], upper = x[y+1], subdivisions = 20000)$value
+
+sapply(seq(0,5,.01), function(s) get_lambda(lambda=s, alpha=bin, S=10, 
+                                            x_ini=x[y], x_fin=x[y+1], PrevObs_x=Prev[y], 
+                                            lives=lx[y]))
 
 ### get prevalence
 get_Prev <- function(lx, ages, lambdas, S){
@@ -37,7 +50,7 @@ get_Prev <- function(lx, ages, lambdas, S){
 
 ### Mortality
 x <- 50:109
-lx <- c(100000L, 99326L, 99281L, 99249L, 99226L, 99208L, 99194L, 99182L, 
+lx_orig <- c(100000L, 99326L, 99281L, 99249L, 99226L, 99208L, 99194L, 99182L, 
         99169L, 99157L, 99145L, 99134L, 99120L, 99105L, 99088L, 99064L, 
         99031L, 98982L, 98917L, 98824L, 98722L, 98612L, 98487L, 98363L, 
         98237L, 98103L, 97975L, 97842L, 97712L, 97578L, 97442L, 97305L, 
@@ -51,13 +64,18 @@ lx <- c(100000L, 99326L, 99281L, 99249L, 99226L, 99208L, 99194L, 99182L,
         24930L, 21576L, 18406L, 15280L, 12542L, 9995L, 7776L, 5883L, 
         4370L, 3156L, 2213L, 1505L, 991L, 631L, 389L, 231L, 133L, 74L, 
         40L, 21L, 10L, 5L, 2L)
-lx <- lx[50:109]/100
-dx <- c(lx[1:59]-lx[2:60], lx[60])
+
+
 length(lx);length(dx)
+
+lx = c(9000,8500,7000,5000)
+x = 5:8
+plot(x, lx)
+lines(splinefun(x~lx, method = "monoH.FC")(probs), probs)
 
 ### life_bins
 # get the ages to which specified quantiles refer.
-life_bins <- function(lx, x, probs =  seq(0,1,by=.05)){
+life_bins <- function(lx, x, probs =  seq(0,1,by=.001)){
   lx <- lx / lx[1]
   splinefun(x~lx, method = "monoH.FC")(probs)
 }
@@ -102,9 +120,6 @@ lambda_estimate <- function(Pi_Obs, lx, S = 10, lambda_limit = c(0,100)){
 }
 
 #################################Application##############################
-
-# fit lambdas adjusted and linearly interpolate
-
 x = 50:109
 Pi_Obs1 = 1/(1+exp(-.05*(x-140)))
 Pi_Obs4 = 1/(1+.002*exp(-.206*(x-140))) + .01
@@ -112,24 +127,45 @@ plot(Pi_Obs1, t="l");lines(Pi_Obs4,lty=2); abline(v=50,lty=3)
 Prevs_sim <- sapply(seq(0,1,.05), function(s) Pi_Obs4 + (Pi_Obs1-Pi_Obs4) * s) 
 plot(Pi_Obs1,pch=15); abline(v=50,lty=2); for(i in 1:ncol(Prevs_sim)) lines(Prevs_sim[,i], col=i); points(Pi_Obs4,pch=15)
 
+# Reviter lambdas
 lambdas_adj <- sapply(1:ncol(Prevs_sim), function(s) lambda_estimate(Prevs_sim[,s], lx)[[1]])
 variances <- sapply(1:ncol(Prevs_sim), function(s) lambda_estimate(Prevs_sim[,s], lx)[[2]])
 
-beta_min_lala <- function(pars = c(scale = 1, shape1 = 10, shape2 = 5), lambda_obs){
-                          xbeta   <- seq(.4, 1,length = length(lambda_obs))
-                          lambdas <- pars["scale"] * dbeta(xbeta, shape1 =  pars["shape1"], shape2 =  pars["shape2"])
-                          sum((lambda_obs[1:50] - lambdas[1:50])^2)
+# obj function
+beta_min_lala <- function(pars = c(scale = 1, shape1 = 10, shape2 = 5), 
+                          lambda_obs, ages, ages_care){
+                          
+                          x_dist   <- seq(0, 1, length = length(lambda_obs))
+                          x_care_dist <- seq((min(ages_care)-min(ages))/diff(range(ages)),
+                                             (max(ages_care)-min(ages))/diff(range(ages)),
+                                             by = diff(x_dist)[1])
+                          lambdas <- pars["scale"] * 
+                                     dbeta(x_care_dist, 
+                                     shape1 =  pars["shape1"], shape2 =  pars["shape2"])
+                          sum((lambda_obs[x_dist %in% x_care_dist] - lambdas[x_dist %in% x_care_dist])^2)
 }
 
-pars_fit <- sapply(1:ncol(lambdas_adj), 
-                   function(s) optim(pars_init, beta_min_lala, 
-                                             lambda_obs = lambdas_adj[,s]$lambda)$par)
+beta_min_lala(
+lambda_obs = lambdas
+,ages = 50:100
+,ages_care = 50:99)
 
+
+
+# beta fit
+pars_fit <- sapply(1:ncol(lambdas_adj), 
+                   function(s) optim(pars_init, 
+                                     beta_min_lala,
+                                     ages, ages_care,
+                                     lambda_obs = lambdas_adj[,s]$lambda)$par)
+
+# lambdas fitted with betas
 lambdas_fit <- sapply(1:ncol(lambdas_adj), 
                    function(s) pars_fit["scale",s] * dbeta(seq(.4, 1, length.out = 60), 
                               shape1 =  pars_fit["shape1",s], 
                               shape2 =  pars_fit["shape2",s]))
 
+# errors
 getMSE <- function(pars_fit, Prevs_obs = Prevs_sim, lx, S = 10, ages_fit=0:49){
   
   lambdas = sapply(1:ncol(Prevs_obs), function(s) pars_fit["scale",s] * 
@@ -146,21 +182,47 @@ getMSE <- function(pars_fit, Prevs_obs = Prevs_sim, lx, S = 10, ages_fit=0:49){
 
 Prev_fit <- getMSE(pars_fit, Prevs_obs = Prevs_sim, lx, S = 10, ages_fit=0:49)
 
-
-
 ##### graphs
+
 cols <- colorRampPalette(c("red", "blue"))(ncol(Prevs_sim))
-par(mfrow=c(1,2))
+par(mfrow=c(1,1))
 # prevs to fit
-plot(Pi_Obs1,pch=15, cex=.5, main="prevalence profiles"); abline(v=50, lty=2)
+plot(Pi_Obs1,pch=15, cex=.5, main="Prevalence profiles",xlab="Age 50+t"); abline(v=50, lty=2)
 for(i in 1:ncol(Prevs_sim)) lines(Prevs_sim[,i], col=cols[i]); points(Pi_Obs4,pch=15,cex=.5)
 # lambdas & beta fit
 plot(NA,xlim=c(0,60),ylim=c(0,7), main="Lambdas adjusted and Beta fit", ylab="", xlab="age"); abline(v=50, lty=2)
 for(i in 1:ncol(lambdas_adj)) points(lambdas_adj[,i]$lambda, col=cols[i], cex=.5, pch=1)
 for(i in 1:ncol(lambdas_fit)) lines(lambdas_fit[,i], col=cols[i], lwd=.1)
 # variances
-plot(NA,xlim=c(0,25),ylim=c(0,100), main="LifeSpan variances", ylab="", xlab="age")
-for(i in 1:ncol(lambdas_adj)) points(i, variances[i], col=cols[i], cex=.5, pch=15)
+plot(NA,xlim=c(0,5),ylim=c(0,100), main="LifeSpan variances", 
+     ylab="Variance", xlab="General Prevalence")
+for(i in 1:ncol(lambdas_adj)) points(general_prev[i]*100, variances[i], col=cols[i], cex=.5, pch=15)
+
+# ¿Como se desplaza esta línea con diferentes ventanas?
+
+
+lambdas_select <- cbind(lambdas_adj[,1]$lambda,lambdas_adj[,20]$lambda)
+
+
+
+
+
+function(prev, lx){
+  
+  return(resumen_fit, 
+         if(plot==T) graph_55_diagn,
+         var, entropy, gini)
+}
+
+
+
+
+
+
+
+
+
+
 # prevs adj with beta
 plot(Pi_Obs1,pch=15, cex=.5, col="white",main="Prevalence Fits",xlab="Age",ylab="Prev")
 abline(v=50, lty=2)
@@ -185,5 +247,9 @@ par(mfrow=c(1,1))
 ##### Conclusiones
   # ttd prevalences can be fitted with lambda model
   # lambdas by age can be modeled with a beta distribution
-  # more Prev compression --> less Beta compression, less mode, more symmetric
+  # more Prev compression --> more lambdas --> 
+                            # more beta parameteres --> less beta mode --> less variance
   # you tell me Prevalence --> I tell you beta shapes --> variance healthy expectancy 
+
+##### Next step (?)
+# try with real multiple prevalences
