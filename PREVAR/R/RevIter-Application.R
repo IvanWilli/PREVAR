@@ -130,7 +130,7 @@ plot(Pi_Obs1,pch=15); abline(v=50,lty=2); for(i in 1:ncol(Prevs_sim)) lines(Prev
 # Reviter lambdas
 lambdas_adj <- sapply(1:ncol(Prevs_sim), function(s) lambda_estimate(Prevs_sim[,s], lx)[[1]])
 variances <- sapply(1:ncol(Prevs_sim), function(s) lambda_estimate(Prevs_sim[,s], lx)[[2]])
-
+hist(variances)
 # obj function
 beta_min_lala <- function(pars = c(scale = 1, shape1 = 10, shape2 = 5), 
                           lambda_obs, ages, ages_care){
@@ -156,10 +156,10 @@ lambda_obs = lambdas
 pars_fit <- sapply(1:ncol(lambdas_adj), 
                    function(s) optim(pars_init, 
                                      beta_min_lala,
-                                     ages, ages_care,
+                                     ages=50:100, ages_care=50:99,
                                      lambda_obs = lambdas_adj[,s]$lambda)$par)
 
-# lambdas fitted with betas
+
 lambdas_fit <- sapply(1:ncol(lambdas_adj), 
                    function(s) pars_fit["scale",s] * dbeta(seq(.4, 1, length.out = 60), 
                               shape1 =  pars_fit["shape1",s], 
