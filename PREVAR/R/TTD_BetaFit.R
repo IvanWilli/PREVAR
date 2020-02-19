@@ -32,15 +32,42 @@ lx_orig <- c(100000L, 99326L, 99281L, 99249L, 99226L, 99208L, 99194L, 99182L,
              24930L, 21576L, 18406L, 15280L, 12542L, 9995L, 7776L, 5883L, 
              4370L, 3156L, 2213L, 1505L, 991L, 631L, 389L, 231L, 133L, 74L, 
              40L, 21L, 10L, 5L, 2L)
-
+lt = data.frame(x=0:110, l=lx_orig)
+lt = lt[lt$x>=50,] 
+lx = lt$l
+x = lt$x
 Pi_Obs1 = 1/(1+exp(-.05*(0:110-140)))
 Pi_Obs4 = 1/(1+.002*exp(-.206*(0:110-140))) + .01
 plot(Pi_Obs1, t="l");lines(Pi_Obs4,lty=2); abline(v=c(50,100),lty=3)
+
+
+# Scenarios ------------------------------------------------------------
+
+# Not fatal disease flat Prev, S = 10  --> OK
 Prev = data.frame(x=0:110, Prev = Pi_Obs1)
-lt = data.frame(x=0:110, l=lx_orig)
-lt = lt[lt$x>=50,] 
-lx = lt$l; x = lt$x
 Prev = Prev[Prev$x>=50,"Prev"] 
+for(bin in seq(1,.5,-.1)){
+  ex1 <- ttd_ineq(x = x, lx = lx, bin = bin, Prev, S = 10, lambda_limit = c(0,100), ages_care = 50:99)
+}
+# Not fatal disease flat Prev, S = 1  --> WRONG
+Prev = data.frame(x=0:110, Prev = Pi_Obs1)
+Prev = Prev[Prev$x>=50,"Prev"] 
+for(bin in seq(1,.5,-.1)){
+  ex1 <- ttd_ineq(x = x, lx = lx, bin = bin, Prev, S = 1, lambda_limit = c(0,100), ages_care = 50:99)
+}
+# Fatal disease flat Prev, S = 10  --> WRONG
+Prev = data.frame(x=0:110, Prev = Pi_Obs4)
+Prev = Prev[Prev$x>=50,"Prev"] 
+for(bin in seq(1,.5,-.1)){
+  ex1 <- ttd_ineq(x = x, lx = lx, bin = bin, Prev, S = 10, lambda_limit = c(0,100), ages_care = 50:99)
+}
+# Fatal disease flat Prev, S = 1 --> OK
+Prev = data.frame(x=0:110, Prev = Pi_Obs4)
+Prev = Prev[Prev$x>=50,"Prev"] 
+for(bin in seq(1,.5,-.1)){
+  ex1 <- ttd_ineq(x = x, lx = lx, bin = bin, Prev, S = 1, lambda_limit = c(0,100), ages_care = 50:99)
+}
+
 
 # aux function 1: prev mirror (more positive more compressed)---------------------------------------------------------
 prev_sv_simetric = function(x, y, S, lambda=3){
@@ -71,9 +98,9 @@ beta_min_lala <- function(pars = c(scale = 1, shape1 = 10, shape2 = 5),
 
 # aux function 3: optim ---------------------------------------------------
 get_lambda = function(lambda, S, x_ini, x_fin, PrevObs_x, lives){
-  Prev_x = integrate(f = prev_sv_simetric, y = x_fin, S = S, lambda = lambda,
-                     lower =  x_ini, upper = x_fin, subdivisions = 20000)$value * lives
-  sum(abs(PrevObs_x - Prev_x))}
+    Prev_x = integrate(f = prev_sv_simetric, y = x_fin, S = S, lambda = lambda,
+                       lower =  x_ini, upper = x_fin, subdivisions = 20000)$value * lives
+    sum(((PrevObs_x - Prev_x)/Prev_x)^2)}
 
 
 # main function -----------------------------------------------------------
@@ -87,7 +114,7 @@ ttd_ineq <- function(x, lx, bin = 1, Prev, S = 10,
   n     <- 1:(length(lx))
   dx    <- c(-diff(lx),lx[length(lx)])
   Prev  <- splinefun(x = x_int, y = Prev)(x)
-  x     <- c(x,  x[length(x)]+bin)
+  x     <- c(x,  x[length(x)]+bin) # include omega
   lx    <- c(lx,0)
   
   # lambdas & matrix prev
@@ -115,7 +142,7 @@ ttd_ineq <- function(x, lx, bin = 1, Prev, S = 10,
   # first fit
   # Prev_fit  <- colSums(matrix_prev_YP[,-ncol(matrix_prev_YP)])/lx[-length(lx)]
   Prev_fit <- colSums(matrix_prev_YP)/lx[-length(lx)]
-  
+  # round((Prev[51:100] - Prev_fit[51:100])/Prev[51:100]*100,0)
   
   # beta fit of lambdas
   pars_init <- c(scale = 1, shape1 = 10, shape2 = 5)
@@ -140,11 +167,11 @@ ttd_ineq <- function(x, lx, bin = 1, Prev, S = 10,
   # graphs
   x = x[-length(x)] 
   Prev_hat  <- colSums(matrix_prev_YP_hat) / lx[-length(lx)]
-  plot(x, Prev, pch=15, cex=.5);lines(x, Prev_fit);lines(x, Prev_hat,col=2); abline(v = range(ages_care), lty=2) 
+  plot(x, Prev, cex=.5, ylim=c(0,max(Prev)+.1));lines(x, Prev_fit);lines(x, Prev_hat,col=2); abline(v = range(ages_care), lty=2, col="grey") 
   legend("topleft", c("Prev Obs","Prev fit lambdas", "Prev fit betas", "Ages that care"),
         lty=c(NA,1,1,2), col=c(1,1,2,1), pch=c(15,NA,NA,NA), bty="n")
   prev_graph <- recordPlot()
-  plot(x, lambdas); lines(x, lambdas_fit); abline(v = range(ages_care), lty=2)
+  plot(x, lambdas); lines(x, lambdas_fit); abline(v = range(ages_care), lty=2, col="grey")
   legend("topleft", c("lambdas", "lambdas fitted by beta dist"), lty=c(1,NA), pch=c(NA,1), cex=.8, bty="n")
   lambda_graph <- recordPlot()
   graphs = list(lambda_fit = lambda_graph, prev_fit = prev_graph)
@@ -170,20 +197,15 @@ ttd_ineq <- function(x, lx, bin = 1, Prev, S = 10,
 }
 
 
-# applications ------------------------------------------------------------
-ttd_run <- ttd_ineq(x = x, lx = lx, bin = 1, Prev, S = 5, 
-                    lambda_limit = c(0,100), ages_care = 50:99)
-ttd_run <- ttd_ineq(x = x, lx = lx, bin = .5, Prev, S = 10, 
-                    lambda_limit = c(0,100), ages_care = 50:99)
-ttd_run <- ttd_ineq(x = x, lx = lx, bin = .5, Prev, S = 5, 
-                    lambda_limit = c(0,100), ages_care = 50:99)
-
-# ttd_run <- ttd_ineq(x = x, lx = lx, bin = .2, Prev, S = seq(10,5,length=50), 
-#                     lambda_limit = c(0,100), ages_care = 50:99)
-# 
 
 
 
-# some incipient highlights (need chek in all space) -----------------------------------------------
-  # less S better fit: ttd meaning
-  # less bin better fit
+
+
+
+
+
+
+
+
+
