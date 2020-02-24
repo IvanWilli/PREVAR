@@ -215,9 +215,9 @@ We aim to clarify the assumptions of this approach, give bounds to its reasonabl
 \parttitle{Methods} 
 We use small scale examples to demonstrate concepts, and then we use HRS data for different health conditions to derive some empirical guidelines. We calculate results for extreme cases to provide bounds, simulate variance under simple assumptions, and simulate a more natural inter-individual state distribution.
 \parttitle{Results} 
-We show that state occupancy variance for Sullivan-style inputs is not identified, and we show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and my own opinion about what a reasonable inter-individual state distribution might look like.
+We show that state occupancy variance for Sullivan-style inputs is not identified, and we show where previously proposed methods fall with respect to reasonable bounds, randomly generated variances, and we propose a variance estimation approach based on what an empirically plausible inter-individual state distribution might look like.
 \parttitle{Conclusions} 
-The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancy.
+The variance of state occupancy time is only identified if a) state life trajectories are directly observed or b) a process model that can generate an asymptotic life trajectory distribution, such as an incidence-based Markov model, is specified. Sullivan-calculations of life expectancy do not imply a single variance, and are therefore insufficient to make statements on within-group inter-individual disparities in state occupancy. Our proposed indirect method may constitute a usable alternative.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -281,7 +281,7 @@ We show that variance is not uniquely identified, and that in fact infinitely ma
 
 At best these rules of thumb will stimulate further efforts to improve them into something that might be adopted in practice, although it would also be a perfectly good outcome if practitioners simply withheld from calculating the variance of state occupancy for Sullivan (health) inputs unless the health process and available approximations are well understood and judged apt. Presently available methods may indeed be apt in other domains, but we argue here that for many health conditions the assumptions required are injurious to good measurement.
 
-[Forthcoming: paragraph to outline structure of article.]
+In the following we first clarify the data constraints under which the state variance problem is posed. We then illustrate the two variance methods that have thus far been proposed using a Markov rewards approach. We then describe a discrete perspective on this problem based on survivor quantile intervals and age intervals. Within this discrete framework, we find the minimum and maximum, and other schematic variances that are possible under a given set of Sullivan inputs. We then empirically motivate and propose a new indirect method to estimate state variance under Sullivan constraints, and then compare the results of this method with the variance estimate of a comparable multistate model.
 
 \section{State expectancies with Sullivan method}
 Let's begin with some demographic notation, $\ell(x)$ denotes lifetable survivorship at age $x$. $\pi(x)$ is the prevalence of a given state (for example, healthy or unhealthy) at age $x$, and it falls in the range $[0,1]$, giving it a probability interpretation. The widely used Sullivan method \citep{sullivan1971single} of calculating healthy life expectancy, $e^H(x)$ consists in the integral of the product of these two functions.
